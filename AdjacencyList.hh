@@ -1,24 +1,27 @@
 #include "graph.hh"
 
-class AdjacencyList: public edge
+class AdjacencyList: public Edge
 {
-private:
-    AdjacencyList *next;
-    int top; //waga ilosc km np
 public:
-    AdjacencyList *GetNext(){return next;}
+    AdjacencyList *next;
+    int top; //wierzcholek
+
     AdjacencyList(){next=NULL;top=0;}
-    int GetTop(){return top;}
+
 };
 
 class graph
 {
     int NumberOfNodes;
-public:
-    int GetNumberOfNodes(){return NumberOfNodes;}
-    AdjacencyList *List; // na prywatne
 
-    void AddEdge(int nod1,int nod2);
+public:
+    bool PossibleLoop;
+    int GetNumberOfNodes(){return NumberOfNodes;}
+    AdjacencyList **List; //tablica z listami powiazan
+
+    void AddEdge(Edge edge);
+    void PrintGraph();
+
 
     graph(int number);
     ~graph();

@@ -4,9 +4,14 @@
 using namespace std;
 
 int main(){
-    int nodes[10]={1,2,3,4,5,6,7,8,9,10};
     graph graph1(10);
-    graph1.AddEdge(1,2);
+    Edge edge;
+    edge.first=1;edge.second=3;edge.weight=2;
+    graph1.AddEdge(edge);
+       graph1.PrintGraph();
+    edge.first=1;edge.second=4;edge.weight=2;
+    graph1.AddEdge(edge);
+    graph1.PrintGraph();
 
-    cout << "lol";
+
 }
