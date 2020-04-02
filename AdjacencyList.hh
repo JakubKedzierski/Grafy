@@ -1,29 +1,34 @@
+#pragma once
+#include "ListGraph.hh"
 #include "graph.hh"
 
 class AdjacencyList: public Edge
 {
 public:
     AdjacencyList *next;
-    int top; //wierzcholek
+    int top,weightTo; //wierzcholek
 
     AdjacencyList(){next=NULL;top=0;}
 
 };
 
-class graph
+class ListGraph
 {
     int NumberOfNodes;
-
-public:
+    int NumberOfEdges;
     bool PossibleLoop;
-    int GetNumberOfNodes(){return NumberOfNodes;}
+public:
+    int &GetNumberOfNodes(){return NumberOfNodes;}
     AdjacencyList **List; //tablica z listami powiazan
 
     void AddEdge(Edge edge);
-    void PrintGraph();
+    void PrintListGraph();
+    void FillListGraph(double density);
+    bool DetectEdge(Edge edge);
+    const int GetNumEdg(){return NumberOfEdges;}
 
-
-    graph(int number);
-    ~graph();
+    ListGraph(int number);
+    ~ListGraph();
 };
+
 
