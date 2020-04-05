@@ -5,6 +5,7 @@
 #include <ctime>
 #include <unistd.h>
 using namespace std;
+ListGraph::ListGraph(){}
 
 ListGraph::ListGraph(int number){
     NumberOfNodes=number;
@@ -15,6 +16,16 @@ ListGraph::~ListGraph()
 {
     delete List;
 }
+
+/*
+ListGraph::ListGraph(const ListGraph &graph){
+    NumberOfNodes=graph.NumberOfNodes;
+    NumberOfEdges=graph.NumberOfEdges;
+    PossibleLoop=false;    
+    List=new AdjacencyList* [NumberOfNodes+1];
+    List=graph.List;
+}
+*/
 
 void ListGraph::AddEdge(Edge edge){
 

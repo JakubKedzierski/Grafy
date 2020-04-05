@@ -2,7 +2,21 @@
 #include <cstdlib>
 #include "AdjacencyMatGraph.hh"
 #include <ctime>
+#include <cmath>
 using namespace std;
+AdjacencyMatGraph::AdjacencyMatGraph(){}
+
+
+AdjacencyMatGraph::AdjacencyMatGraph(const AdjacencyMatGraph &graph){    
+    NumberOfNodes=graph.NumberOfNodes;
+    matrix=new int *[NumberOfNodes];
+    for(int i=0;i<NumberOfNodes;i++){
+        matrix[i]=new int[NumberOfNodes];
+        matrix[i]=graph.matrix[i];
+    } 
+    
+}
+
 
 AdjacencyMatGraph::AdjacencyMatGraph(int NumOfNodes){
     NumberOfNodes=NumOfNodes;
@@ -14,9 +28,9 @@ AdjacencyMatGraph::AdjacencyMatGraph(int NumOfNodes){
     }
     for(int i=0;i<NumberOfNodes;i++){
         for(int j=0;j<NumberOfNodes;j++){
-            matrix[i][j]=maxweight; // maxweight ustawione jako flaga swiadczace ze dane pole jest puste 
+            matrix[i][j]=maxweight+1; // maxweight+1 ustawione jako flaga swiadczace ze dane pole jest puste 
         }                           // zgodnie z konwencja ze gdy mozliwe sa petle w grafie waga polaczenia = 0
-    }                               // a brak polaczenia to nieskonczonosc (w przypadku tej implementacji -> maxweight)
+    }                               // a brak polaczenia to nieskonczonosc (w przypadku tej implementacji -> maxweight+1)
 }
 
 AdjacencyMatGraph::~AdjacencyMatGraph(){
@@ -25,6 +39,9 @@ AdjacencyMatGraph::~AdjacencyMatGraph(){
     }
     delete matrix;
 }
+
+
+
 
 void AdjacencyMatGraph::AddEdge(Edge edge){
     if(edge.first!=edge.second){
@@ -49,12 +66,19 @@ cout << endl << "Macierz sasiedztwa:" << endl;
         }
 }
 
-
+/**
+ * @brief Przy wypelnianu grafu zastosowalem metode losowania ze zbioru, po to aby nie powtarzaly sie
+ * wyniki losowania oraz aby uniknac petli w grafie 
+ * 
+ * @param density 
+ */
 void AdjacencyMatGraph::FillGraph(double density){
-    NumberOfEdges=NumberOfNodes*(NumberOfNodes-1)*density/2;
+    double nv=NumberOfNodes,ne=nv*(nv-1)*density;
+    NumberOfEdges=ne;
     srand( time( NULL ) );
 
-    if(density==1){
+
+    if(density==1){  // w przypadku pelnego grafu przyspieszamy wypelnianie grafu
         for(int i=0;i<NumberOfNodes;i++){
             for(int j=0;j<NumberOfNodes;j++){
                 if(i!=j){
@@ -65,15 +89,37 @@ void AdjacencyMatGraph::FillGraph(double density){
         }
         return ;
     }
+    
+    
+    int RandNum=0,Edgenum=(NumberOfNodes*NumberOfNodes-NumberOfNodes),div=1; // edgenum wlasciwa max liczba kraawedzi po odjeciu bez loop
+    int *RandTab=new int [Edgenum];
 
-// Trzeba naprawic wypelnianie dla innych przypadkow
-    double point=0,col,nex; 
-    for(int i=0;i<NumberOfEdges;i++){
-        point=rand()%(NumberOfNodes*(NumberOfNodes-1));
-        nex=point/NumberOfNodes;
-        col=int((point/NumberOfNodes))%NumberOfNodes;
-        matrix[(int)(nex)][(int)(col)]=rand() %maxweight+1;
+   
+    for(int i=0;i<Edgenum;i++){
+        ++RandNum;
+        if(RandNum==div){
+            RandNum++;
+            div+=NumberOfNodes+1;
+        }
+        RandTab[i]=RandNum;
+    }
+
+    int Num=NumberOfEdges,row,col,p=0;
+    double choice;
+ 
+    while(Num){
+        p++;
+        RandNum=rand() %Num;
+        choice=RandTab[RandNum];
+        RandTab[RandNum]=RandTab[Edgenum-p];
+        --Num;
+        row=ceil(choice/NumberOfNodes)-1;
+        col=choice-row*NumberOfNodes-1;
+        matrix[row][col]=rand()%maxweight+1;
+
     }
 
 
+
+// Przeniesc to myslenie do listy tam tez powinno smigac
 }
