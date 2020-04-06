@@ -51,14 +51,32 @@ elem PriorityQueue::pop(){
     return ReturnElem;
 }
 
-void DijkstraAlgorythm(int n,int Node,AdjacencyMatGraph graph1){
-    int *LengthTab= new int[n];
-    for(int i=0;i<n;i++){
+int* DijkstraAlgorythm(int Node1,AdjacencyMatGraph graph1){
+    int Node=Node1-1;
+    PriorityQueue queue(graph1.GetNumberOfNodes());
+    elem nearest;
+    int *LengthTab= new int[graph1.GetNumberOfNodes()];
+    
+    for(int i=0;i<graph1.GetNumberOfNodes();i++){
         LengthTab[i]=maxweight+1;
     }
     LengthTab[Node]=0;
-    
-//kolejka
 
-    delete(LengthTab);
+    for(int i=0;i<graph1.GetNumberOfNodes();i++){
+            queue.push(i,graph1(Node,i));
+    }
+    
+
+    while(!queue.IsEmpty()){
+        nearest=queue.pop();
+        
+        for(int i=0;i<graph1.GetNumberOfNodes();i++){    
+            if( (LengthTab[nearest.Node]+graph1(nearest.Node,i)) < LengthTab[i] ){           
+                 LengthTab[i]=LengthTab[nearest.Node]+graph1(nearest.Node,i);
+            }
+        }
+
+    }   
+
+    return LengthTab;
 }

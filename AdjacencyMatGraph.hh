@@ -13,6 +13,8 @@ public:
     int **GetMatrix(){return matrix;}
     void AddEdge(Edge edge);
 
+    const int GetNumberOfNodes(){return NumberOfNodes;}
+    double operator()(int Index1,int Index2){return matrix[Index1][Index2];}
     AdjacencyMatGraph();
     AdjacencyMatGraph(int NumOfNodes);
     ~AdjacencyMatGraph();

@@ -26,9 +26,10 @@ private:
     int n; //ilosc elementow
 public:
     elem pop();
-    void push(int AddData,int AddPriority);
+    void push(int Node,int AddPriority);
     PriorityQueue(int MaxN){queue=new elem[MaxN];n=0;}
     ~PriorityQueue(){delete queue;}
+    bool IsEmpty(){return n?false:true;}
 };
 
-void DijkstraAlgorythm(int n,int Node, AdjacencyMatGraph graph1);
+int* DijkstraAlgorythm(int Node, AdjacencyMatGraph graph1);

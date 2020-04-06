@@ -31,12 +31,15 @@ AdjacencyMatGraph::AdjacencyMatGraph(int NumOfNodes){
             matrix[i][j]=maxweight+1; // maxweight+1 ustawione jako flaga swiadczace ze dane pole jest puste 
         }                           // zgodnie z konwencja ze gdy mozliwe sa petle w grafie waga polaczenia = 0
     }                               // a brak polaczenia to nieskonczonosc (w przypadku tej implementacji -> maxweight+1)
+
+    for(int i=0;i<NumberOfNodes;i++){           // do samego siebie -> odgleglosc =0
+        for(int j=0;j<NumberOfNodes;j++){
+            if(i==j){matrix[i][i]=0;}
+        }
+    }
 }
 
 AdjacencyMatGraph::~AdjacencyMatGraph(){
-    for(int i=0;i<NumberOfNodes;i++){
-        delete matrix[i];
-    }
     delete matrix;
 }
 
@@ -45,9 +48,10 @@ AdjacencyMatGraph::~AdjacencyMatGraph(){
 
 void AdjacencyMatGraph::AddEdge(Edge edge){
     if(edge.first!=edge.second){
-        matrix[edge.first][edge.second]=edge.weight;
+        matrix[edge.first-1][edge.second-1]=edge.weight;
+        matrix[edge.second-1][edge.first-1]=edge.weight;
     }else{
-        matrix[edge.first][edge.second]=0;
+        matrix[edge.first-1][edge.second-1]=0;
     }
 }
 
@@ -79,17 +83,17 @@ void AdjacencyMatGraph::FillGraph(double density){
 
 
     if(density==1){  // w przypadku pelnego grafu przyspieszamy wypelnianie grafu
-        for(int i=0;i<NumberOfNodes;i++){
+        for(int i=0;i<NumberOfNodes;i++){  // tu jest niefajnie
             for(int j=0;j<NumberOfNodes;j++){
                 if(i!=j){
                     matrix[i][j]=rand() %maxweight+1;
+                    matrix[j][i]=matrix[i][j];
                 }
             }
                 
         }
         return ;
     }
-    
     
     int RandNum=0,Edgenum=(NumberOfNodes*NumberOfNodes-NumberOfNodes),div=1; // edgenum wlasciwa max liczba kraawedzi po odjeciu bez loop
     int *RandTab=new int [Edgenum];
@@ -116,6 +120,7 @@ void AdjacencyMatGraph::FillGraph(double density){
         row=ceil(choice/NumberOfNodes)-1;
         col=choice-row*NumberOfNodes-1;
         matrix[row][col]=rand()%maxweight+1;
+        matrix[col][row]=matrix[row][col];
 
     }
 
