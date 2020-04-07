@@ -6,10 +6,10 @@ class AdjacencyList: public Edge
 {
 public:
     AdjacencyList *next;
-    int top,weightTo; //wierzcholek
+    int Vnode,weightTo; //wierzcholek
 
-    AdjacencyList(){next=NULL;top=0;}
-   /* AdjacencyList(const AdjacencyList &List){next=new AdjacencyList;next=List.next;top=List.top;weightTo=List.weightTo;}*/
+    AdjacencyList(){next=NULL;Vnode=0;}
+   /* AdjacencyList(const AdjacencyList &List){next=new AdjacencyList;next=List.next;Vnode=List.Vnode;weightTo=List.weightTo;}*/
 };
 
 class ListGraph

@@ -40,7 +40,7 @@ AdjacencyMatGraph::AdjacencyMatGraph(int NumOfNodes){
 }
 
 AdjacencyMatGraph::~AdjacencyMatGraph(){
-    delete matrix;
+ //   delete matrix;
 }
 
 
@@ -77,7 +77,7 @@ cout << endl << "Macierz sasiedztwa:" << endl;
  * @param density 
  */
 void AdjacencyMatGraph::FillGraph(double density){
-    double nv=NumberOfNodes,ne=nv*(nv-1)*density;
+    double nv=NumberOfNodes,ne=nv*(nv-1)*density/2;
     NumberOfEdges=ne;
     srand( time( NULL ) );
 

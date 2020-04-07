@@ -14,10 +14,10 @@ ListGraph::ListGraph(int number){
 }
 ListGraph::~ListGraph()
 {
-    delete List;
+    //delete List;
 }
 
-/*
+
 ListGraph::ListGraph(const ListGraph &graph){
     NumberOfNodes=graph.NumberOfNodes;
     NumberOfEdges=graph.NumberOfEdges;
@@ -25,7 +25,7 @@ ListGraph::ListGraph(const ListGraph &graph){
     List=new AdjacencyList* [NumberOfNodes+1];
     List=graph.List;
 }
-*/
+
 
 void ListGraph::AddEdge(Edge edge){
 
@@ -35,7 +35,7 @@ void ListGraph::AddEdge(Edge edge){
     }
 
     AdjacencyList *Node=new AdjacencyList;
-    Node->top=edge.second; // dodanie drugiego wierzcholka
+    Node->Vnode=edge.second; // dodanie drugiego wierzcholka
     Node->weightTo=edge.weight;
     Node->next=List[edge.first];       // Dodanie w drugim wskaznika na pierwszy (sasiad pierwszego)    
                                             // dodajemy wierzcholki na poczatek listy 
@@ -43,7 +43,7 @@ void ListGraph::AddEdge(Edge edge){
 
     /* To samo z drugim wierzcholkiem*/
     Node=new AdjacencyList;
-    Node->top=edge.first;
+    Node->Vnode=edge.first;
     Node->weightTo=edge.weight; 
     Node->next=List[edge.second];     
                                             
@@ -65,7 +65,7 @@ void ListGraph::PrintListGraph(){
         }
 
        while(tmp){
-           cout << setw(2) << tmp->top ;
+           cout << setw(2) << tmp->Vnode ;
            tmp=tmp->next;
            if(tmp) 
             cout <<  ", ";
@@ -81,7 +81,7 @@ bool ListGraph::DetectEdge(Edge edge){
     tmp=List[edge.first];
 
        while(tmp){
-           if(tmp->top==edge.second){
+           if(tmp->Vnode==edge.second){
                return true;
            }
            tmp=tmp->next;
