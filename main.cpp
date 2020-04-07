@@ -14,12 +14,12 @@ int main(){
 
     graph g(4);
     //g.MatGraph.FillGraph(1);
-    //g.List.FillListGraph(1);
+    g.List.FillListGraph(1);
     g.MatGraph.AddEdge(e1);g.MatGraph.AddEdge(e2);g.MatGraph.AddEdge(e3);
-    g.List.AddEdge(e1);g.List.AddEdge(e2);g.List.AddEdge(e3);
+    //g.List.AddEdge(e1);g.List.AddEdge(e2);g.List.AddEdge(e3);
     
     g.List.PrintListGraph();
-    g.MatGraph.PrintGraph();
+   // g.MatGraph.PrintGraph();
     
     g.choice=adjacencylist;
     int *tab=DijkstraAlgorythm(3,g);

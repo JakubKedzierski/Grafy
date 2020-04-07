@@ -55,7 +55,8 @@ void ListGraph::AddEdge(Edge edge){
 void ListGraph::PrintListGraph(){
  AdjacencyList *tmp=new AdjacencyList; // tymczasowa lista zeby nie nadpisywac danych
     
-    cout << endl << "graf" << endl;
+    cout << endl << "Graf reprezentowany na liscie sasiedztwa" << endl;
+    cout << "[wierzcholek: wierzcholek sasiadujacy -> waga polaczenia, nastepny sasiad ...]" << endl;
     for(int i=1;i<NumberOfNodes+1;i++){
        cout << endl <<  i << ":";
        tmp=List[i];
@@ -65,7 +66,7 @@ void ListGraph::PrintListGraph(){
         }
 
        while(tmp){
-           cout << setw(2) << tmp->Vnode ;
+           cout << " " <<tmp->Vnode << "->" << tmp->weightTo;
            tmp=tmp->next;
            if(tmp) 
             cout <<  ", ";

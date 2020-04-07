@@ -86,16 +86,14 @@ int* DijkstraAlgorythm(int Node1,graph graphh){
 
 
             while(!queue.IsEmpty()){
-                queue.PrintQueue();
                 nearest=queue.pop();      
-                tmp=graphh.List.List[nearest.Node]; // listagraph musi dodawac 0 priority dla samego siebie wierzcholka
-                // tu skonczylem prace i tu sa bledy mozna pomyslec o 0 
-                while(tmp){   
-                    cout <<  "tab " << LengthTab[tmp->Vnode] << endl;
-                    if( (LengthTab[nearest.Node]+tmp->weightTo) < LengthTab[tmp->Vnode] ){           
-                            LengthTab[tmp->Vnode]=LengthTab[nearest.Node]+tmp->weightTo;
+                tmp=graphh.List.List[nearest.Node]; 
+
+                while(tmp){                            // dla wszystkich sasiadow wyjetego z kolejki wierzcholka
+                    if( (LengthTab[nearest.Node-1]+tmp->weightTo) < LengthTab[tmp->Vnode-1] ){           
+                            LengthTab[tmp->Vnode-1]=LengthTab[nearest.Node-1]+tmp->weightTo;
                     }
-                    tmp=tmp->next;
+                    tmp=tmp->next;                    // przesuwamy sie po sasiadach
                 }
 
             }
