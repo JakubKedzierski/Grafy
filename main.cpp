@@ -6,27 +6,24 @@
 
 using namespace std;
 
+int FindBestWayBetween(int Node1,int Node2,Graph* graph){
+    int *tab=DijkstraAlgorythm(Node1,dynamic_cast <AdjacencyMatGraph*>(graph));
+    return tab[Node2-1];
+}
+
 int main(){
 
- //   Edge e1;e1.first=2;e1.second=3;e1.weight=900;
-    Edge e2;e2.first=2;e2.second=4;e2.weight=990;
+    Edge e1;e1.first=2;e1.second=3;e1.weight=900;
+    Edge e2;e2.first=2;e2.second=4;e2.weight=40;
     Edge e3;e3.first=4;e3.second=3;e3.weight=500;
 
-    graph g(4);
-    //g.List.FillListGraph(1);
-   // g.MatGraph.AddEdge(e1);
-    g.MatGraph.AddEdge(e2);g.MatGraph.AddEdge(e3);
-    g.List.AddEdge(e2);g.List.AddEdge(e3);
-    g.List.PrintGraph();
-    g.MatGraph.PrintGraph();
+
+    Graph *graph1=new AdjacencyMatGraph(4);
+    dynamic_cast <AdjacencyMatGraph*>(graph1)->AddEdge(e1);
+    dynamic_cast <AdjacencyMatGraph*>(graph1)->AddEdge(e2);
+    dynamic_cast <AdjacencyMatGraph*>(graph1)->AddEdge(e3);
     
-    //g.choice=adjacencylist;
-    int *tab=DijkstraAlgorythm(2,g);
-  
-
-      for(int i=0;i<4;i++){
-        cout << "Odleglosc 2 od " << i+1 << " : "<< tab[i]<< endl ; 
-    }
-
+    graph1->PrintGraph();
+    cout << FindBestWayBetween(2,3,graph1) << endl;
 
 }

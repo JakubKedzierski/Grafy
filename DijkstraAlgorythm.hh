@@ -3,23 +3,6 @@
 #include "AdjacencyMatGraph.hh"
 #include "AdjacencyList.hh"
 
-enum choose{
-    adjacencylist,
-    adjacencymatrix
-};
-
-class graph{
-public:
-    choose choice;
-    int NumberOfNodes;
-    ListGraph List;
-    AdjacencyMatGraph MatGraph;
-    graph(int n){ListGraph g(n);List=g;AdjacencyMatGraph m(n);MatGraph=m;choice=adjacencymatrix;
-                 NumberOfNodes=n;}
-
-};
-
-
 struct elem
 {
     int Node;
@@ -39,4 +22,5 @@ public:
     void PrintQueue();
 };
 
-int* DijkstraAlgorythm(int Node, graph graph1);
+int* DijkstraAlgorythm(int Node,ListGraph *graph);
+int* DijkstraAlgorythm(int Node,AdjacencyMatGraph *graph);

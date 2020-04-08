@@ -11,7 +11,7 @@ public:
     AdjacencyList(){next=NULL;Vnode=0;}
 };
 
-class ListGraph//:public Graph
+class ListGraph:public Graph
 {
 protected:    
     int NumberOfNodes;
@@ -19,18 +19,23 @@ protected:
     bool PossibleLoop;
     AdjacencyList **TabOfLists; //tablica z listami powiazan , iterujemy od 1.
 public:
+ 
+    ListGraph();
+    ListGraph(int number);
+    ListGraph(const ListGraph &graph);
+    ~ListGraph();
+
     int GetNumberOfNodes(){return NumberOfNodes;}
     AdjacencyList* GetListOfAdjacency(int Node){return TabOfLists[Node];}
     void AddEdge(Edge edge);
-    void PrintGraph();
-    void FillListGraph(double density);
     bool DetectEdge(Edge edge);
     const int GetNumEdg(){return NumberOfEdges;}
 
-    ListGraph(const ListGraph &graph);
-    ListGraph();
-    ListGraph(int number);
-    ~ListGraph();
+    /* Metody wirtualne */
+    void PrintGraph();
+    void FillGraph(double density);
+    bool WriteToFile() const;
+    bool ReadFromFile();
 };
 
 

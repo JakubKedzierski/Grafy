@@ -4,11 +4,6 @@
 #include <ctime>
 #include <cmath>
 using namespace std;
-/*Graph::Graph(){}
-Graph::~Graph(){}
-*/
-AdjacencyMatGraph::AdjacencyMatGraph(){}
-
 
 AdjacencyMatGraph::AdjacencyMatGraph(const AdjacencyMatGraph &graph){    
     NumberOfNodes=graph.NumberOfNodes;
@@ -137,4 +132,11 @@ void AdjacencyMatGraph::FillGraph(double density){
 
 
 // Przeniesc to myslenie do listy tam tez powinno smigac
+}
+
+bool AdjacencyMatGraph::WriteToFile() const{
+
+}
+bool AdjacencyMatGraph::ReadFromFile(){
+
 }

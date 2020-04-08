@@ -90,7 +90,7 @@ bool ListGraph::DetectEdge(Edge edge){
     return false;
 }
 
-void ListGraph::FillListGraph(double density){
+void ListGraph::FillGraph(double density){
     int counter=0; 
     NumberOfEdges=NumberOfNodes*(NumberOfNodes-1)*density/2;
     srand( time( NULL ) );
@@ -117,7 +117,7 @@ void ListGraph::FillListGraph(double density){
     }
 
 
-// niewydajna
+                                                    // niewydajna to jest do zmiany
     for(int i=0;i<NumberOfEdges;i++){
         edge1.weight=rand() %1000+1;
         edge1.first=first[rand()%ToRand+1];
@@ -165,7 +165,12 @@ void ListGraph::FillListGraph(double density){
     }
 
     
-//for(int i=0;i<NumOfEdges;i++){
-  //  cout << edges[i].first << "  " << edges[i].second << "  " << edges[i].weight << endl;
-//}
+}
+
+bool ListGraph::WriteToFile() const{
+
+}
+
+bool ListGraph::ReadFromFile(){
+    
 }

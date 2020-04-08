@@ -60,63 +60,68 @@ void PriorityQueue::PrintQueue(){
     }
 }
 
-int* DijkstraAlgorythm(int Node1,graph graphh){
+int* DijkstraAlgorythm(int NodePlus1,ListGraph *graph){
     
-    int Node=Node1-1;                          // wybrany wierzcholek (jako ze numeracja w tablicy od 0 a numeracja wierzcholkow od 1)                     
-    PriorityQueue queue(graphh.NumberOfNodes); // tworzymy kolejke priorytetowa przechowujaca max elem =liczba wierzcholkow
+    int Node=NodePlus1-1;                          // wybrany wierzcholek (jako ze numeracja w tablicy od 0 a numeracja wierzcholkow od 1)                     
+    PriorityQueue queue(graph->GetNumberOfNodes()); // tworzymy kolejke priorytetowa przechowujaca max elem =liczba wierzcholkow
     elem nearest;                              // zmienna pomocnicza dla 'wyjetego' z kolejki elementu               
-    int *LengthTab= new int[graphh.NumberOfNodes];  // tablica przechowujaca odleglosci do pozostalych wierzcholkow
+    int *LengthTab= new int[graph->GetNumberOfNodes()];  // tablica przechowujaca odleglosci do pozostalych wierzcholkow
 
-    for(int i=0;i<graphh.NumberOfNodes;i++){      // Przypisanie naszej flagi (brak polaczenia z wierzcholkiem)
+    for(int i=0;i<graph->GetNumberOfNodes();i++){      // Przypisanie naszej flagi (brak polaczenia z wierzcholkiem)
         LengthTab[i]=100000;
     }
     LengthTab[Node]=0;                            // dla wybranego wierzcholka odleglosc do samego siebie to 0
     
+    AdjacencyList *tmp=new AdjacencyList; // tymczasowa lista zeby nie nadpisywac danych
+    tmp=graph->GetListOfAdjacency(NodePlus1);
+       
+    queue.push(NodePlus1,0);               // na potrzeby algorytmu dodaje wierzcholek wybrany
+          
+    while(tmp){
+        queue.push(tmp->Vnode,tmp->weightTo);
+        tmp=tmp->next;
+    }
 
-    switch(graphh.choice){
-        case adjacencylist:{
-            AdjacencyList *tmp=new AdjacencyList; // tymczasowa lista zeby nie nadpisywac danych
-            tmp=graphh.List.GetListOfAdjacency(Node1);
-            queue.push(Node1,0);
-            
-            while(tmp){
-                queue.push(tmp->Vnode,tmp->weightTo);
-                tmp=tmp->next;
+    while(!queue.IsEmpty()){
+        nearest=queue.pop();      
+        tmp=graph->GetListOfAdjacency(nearest.Node);  
+
+        while(tmp){                            // dla wszystkich sasiadow wyjetego z kolejki wierzcholka
+            if( (LengthTab[nearest.Node-1]+tmp->weightTo) < LengthTab[tmp->Vnode-1] ){           
+                LengthTab[tmp->Vnode-1]=LengthTab[nearest.Node-1]+tmp->weightTo;
             }
-
-
-            while(!queue.IsEmpty()){
-                nearest=queue.pop();      
-                tmp=graphh.List.GetListOfAdjacency(nearest.Node); 
-
-                while(tmp){                            // dla wszystkich sasiadow wyjetego z kolejki wierzcholka
-                    if( (LengthTab[nearest.Node-1]+tmp->weightTo) < LengthTab[tmp->Vnode-1] ){           
-                            LengthTab[tmp->Vnode-1]=LengthTab[nearest.Node-1]+tmp->weightTo;
-                    }
-                    tmp=tmp->next;                    // przesuwamy sie po sasiadach
-                }
-
-            }
-
-            break;
+            tmp=tmp->next;                    // przesuwamy sie po sasiadach
         }
 
-        case adjacencymatrix: {
-            for(int i=0;i<graphh.NumberOfNodes;i++){
-                queue.push(i,graphh.MatGraph(Node,i)); // na kolejke dodaja sie tez wierzcholki ktore nie istnieja - bardzo niepotrzebne
-            }
+    }
 
-            while(!queue.IsEmpty()){
-                nearest=queue.pop();
+    return LengthTab;
+
+}
+
+int* DijkstraAlgorythm(int NodePlus1,AdjacencyMatGraph *graph){
+
+    int Node=NodePlus1-1;                          // wybrany wierzcholek (jako ze numeracja w tablicy od 0 a numeracja wierzcholkow od 1)                     
+    PriorityQueue queue(graph->GetNumberOfNodes()); // tworzymy kolejke priorytetowa przechowujaca max elem =liczba wierzcholkow
+    elem nearest;                              // zmienna pomocnicza dla 'wyjetego' z kolejki elementu               
+    int *LengthTab= new int[graph->GetNumberOfNodes()];  // tablica przechowujaca odleglosci do pozostalych wierzcholkow
+
+    for(int i=0;i<graph->GetNumberOfNodes();i++){      // Przypisanie naszej flagi (brak polaczenia z wierzcholkiem)
+        LengthTab[i]=100000;
+    }
+    LengthTab[Node]=0;    
+
+    for(int i=0;i<graph->GetNumberOfNodes();i++){
+        queue.push(i,(*graph)(Node,i)); // na kolejke dodaja sie tez wierzcholki ktore nie istnieja - bardzo niepotrzebne
+    }
+
+    while(!queue.IsEmpty()){
+        nearest=queue.pop();
         
-                for(int i=0;i<graphh.NumberOfNodes;i++){    
-                    if( (LengthTab[nearest.Node]+graphh.MatGraph(nearest.Node,i)) < LengthTab[i] ){           
-                        LengthTab[i]=LengthTab[nearest.Node]+graphh.MatGraph(nearest.Node,i);
-                    }
-                }
-
+        for(int i=0;i<graph->GetNumberOfNodes();i++){    
+            if( (LengthTab[nearest.Node]+(*graph)(nearest.Node,i)) < LengthTab[i] ){           
+                LengthTab[i]=LengthTab[nearest.Node]+(*graph)(nearest.Node,i);
             }
-            break;
         }
 
     }
