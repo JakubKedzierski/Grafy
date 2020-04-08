@@ -28,7 +28,7 @@ AdjacencyMatGraph::AdjacencyMatGraph(int NumOfNodes){
     }
     for(int i=0;i<NumberOfNodes;i++){
         for(int j=0;j<NumberOfNodes;j++){
-            matrix[i][j]=maxweight+1; // maxweight+1 ustawione jako flaga swiadczace ze dane pole jest puste 
+            matrix[i][j]=100000; // maxweight+1 ustawione jako flaga swiadczace ze dane pole jest puste 
         }                           // zgodnie z konwencja ze gdy mozliwe sa petle w grafie waga polaczenia = 0
     }                               // a brak polaczenia to nieskonczonosc (w przypadku tej implementacji -> maxweight+1)
 
@@ -64,7 +64,11 @@ cout << endl << "Macierz sasiedztwa:" << endl;
         for(int i=0;i<NumberOfNodes;i++){
             cout << setw(4) << i+1 << "|";   
             for(int j=0;j<NumberOfNodes;j++){
-                    cout << setw(5) << matrix[i][j];
+                    if(matrix[i][j]==100000){
+                        cout << " NULL";
+                    }else{
+                        cout << setw(5) << matrix[i][j];
+                    }
             }
             cout << endl;
         }
@@ -86,7 +90,7 @@ void AdjacencyMatGraph::FillGraph(double density){
         for(int i=0;i<NumberOfNodes;i++){  // tu jest niefajnie
             for(int j=0;j<NumberOfNodes;j++){
                 if(i!=j){
-                    matrix[i][j]=rand() %maxweight+1;
+                    matrix[i][j]=rand() %1000+1;
                     matrix[j][i]=matrix[i][j];
                 }
             }
@@ -115,11 +119,14 @@ void AdjacencyMatGraph::FillGraph(double density){
         p++;
         RandNum=rand() %Num;
         choice=RandTab[RandNum];
-        RandTab[RandNum]=RandTab[Edgenum-p];
+        RandTab[RandNum]=RandTab[Edgenum-p];     // to chyba nie jest dobrze bo dalej mozemy trafic 4-3 a pozniej 3-4
+
+        // spostzezenie -> wystarczy losowac z dolu lub z gory przekatnej
+
         --Num;
         row=ceil(choice/NumberOfNodes)-1;
         col=choice-row*NumberOfNodes-1;
-        matrix[row][col]=rand()%maxweight+1;
+        matrix[row][col]=rand()%1000+1;
         matrix[col][row]=matrix[row][col];
 
     }

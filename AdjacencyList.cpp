@@ -9,7 +9,7 @@ ListGraph::ListGraph(){}
 
 ListGraph::ListGraph(int number){
     NumberOfNodes=number;
-    List=new AdjacencyList* [number+1];
+    TabOfLists=new AdjacencyList* [number+1];
     PossibleLoop=false;
 }
 ListGraph::~ListGraph()
@@ -22,8 +22,8 @@ ListGraph::ListGraph(const ListGraph &graph){
     NumberOfNodes=graph.NumberOfNodes;
     NumberOfEdges=graph.NumberOfEdges;
     PossibleLoop=false;    
-    List=new AdjacencyList* [NumberOfNodes+1];
-    List=graph.List;
+    TabOfLists=new AdjacencyList* [NumberOfNodes+1];
+    TabOfLists=graph.TabOfLists;
 }
 
 
@@ -37,17 +37,17 @@ void ListGraph::AddEdge(Edge edge){
     AdjacencyList *Node=new AdjacencyList;
     Node->Vnode=edge.second; // dodanie drugiego wierzcholka
     Node->weightTo=edge.weight;
-    Node->next=List[edge.first];       // Dodanie w drugim wskaznika na pierwszy (sasiad pierwszego)    
+    Node->next=TabOfLists[edge.first];       // Dodanie w drugim wskaznika na pierwszy (sasiad pierwszego)    
                                             // dodajemy wierzcholki na poczatek listy 
-    List[edge.first]=Node;
+    TabOfLists[edge.first]=Node;
 
     /* To samo z drugim wierzcholkiem*/
     Node=new AdjacencyList;
     Node->Vnode=edge.first;
     Node->weightTo=edge.weight; 
-    Node->next=List[edge.second];     
+    Node->next=TabOfLists[edge.second];     
                                             
-    List[edge.second]=Node;
+    TabOfLists[edge.second]=Node;
 
 
 }
@@ -59,7 +59,7 @@ void ListGraph::PrintListGraph(){
     cout << "[wierzcholek: wierzcholek sasiadujacy -> waga polaczenia, nastepny sasiad ...]" << endl;
     for(int i=1;i<NumberOfNodes+1;i++){
        cout << endl <<  i << ":";
-       tmp=List[i];
+       tmp=TabOfLists[i];
         
         if(!tmp){
             cout << "NULL";
@@ -79,7 +79,7 @@ void ListGraph::PrintListGraph(){
 bool ListGraph::DetectEdge(Edge edge){
     AdjacencyList *tmp=new AdjacencyList; // tymczasowa lista zeby nie nadpisywac danych
     
-    tmp=List[edge.first];
+    tmp=TabOfLists[edge.first];
 
        while(tmp){
            if(tmp->Vnode==edge.second){

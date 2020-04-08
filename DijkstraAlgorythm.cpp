@@ -68,7 +68,7 @@ int* DijkstraAlgorythm(int Node1,graph graphh){
     int *LengthTab= new int[graphh.NumberOfNodes];  // tablica przechowujaca odleglosci do pozostalych wierzcholkow
 
     for(int i=0;i<graphh.NumberOfNodes;i++){      // Przypisanie naszej flagi (brak polaczenia z wierzcholkiem)
-        LengthTab[i]=maxweight+1;
+        LengthTab[i]=100000;
     }
     LengthTab[Node]=0;                            // dla wybranego wierzcholka odleglosc do samego siebie to 0
     
@@ -76,7 +76,7 @@ int* DijkstraAlgorythm(int Node1,graph graphh){
     switch(graphh.choice){
         case adjacencylist:{
             AdjacencyList *tmp=new AdjacencyList; // tymczasowa lista zeby nie nadpisywac danych
-            tmp=graphh.List.List[Node1];
+            tmp=graphh.List.GetListOfAdjacency(Node1);
             queue.push(Node1,0);
             
             while(tmp){
@@ -87,7 +87,7 @@ int* DijkstraAlgorythm(int Node1,graph graphh){
 
             while(!queue.IsEmpty()){
                 nearest=queue.pop();      
-                tmp=graphh.List.List[nearest.Node]; 
+                tmp=graphh.List.GetListOfAdjacency(nearest.Node); 
 
                 while(tmp){                            // dla wszystkich sasiadow wyjetego z kolejki wierzcholka
                     if( (LengthTab[nearest.Node-1]+tmp->weightTo) < LengthTab[tmp->Vnode-1] ){           

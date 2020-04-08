@@ -9,7 +9,6 @@ public:
     int Vnode,weightTo; //wierzcholek
 
     AdjacencyList(){next=NULL;Vnode=0;}
-   /* AdjacencyList(const AdjacencyList &List){next=new AdjacencyList;next=List.next;Vnode=List.Vnode;weightTo=List.weightTo;}*/
 };
 
 class ListGraph
@@ -18,10 +17,10 @@ protected:
     int NumberOfNodes;
     int NumberOfEdges;
     bool PossibleLoop;
+    AdjacencyList **TabOfLists; //tablica z listami powiazan , iterujemy od 1.
 public:
-    int &GetNumberOfNodes(){return NumberOfNodes;}
-    AdjacencyList **List; //tablica z listami powiazan
-
+    int GetNumberOfNodes(){return NumberOfNodes;}
+    AdjacencyList* GetListOfAdjacency(int Node){return TabOfLists[Node];}
     void AddEdge(Edge edge);
     void PrintListGraph();
     void FillListGraph(double density);

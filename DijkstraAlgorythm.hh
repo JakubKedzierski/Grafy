@@ -15,7 +15,8 @@ public:
     ListGraph List;
     AdjacencyMatGraph MatGraph;
     graph(int n){ListGraph g(n);List=g;AdjacencyMatGraph m(n);MatGraph=m;choice=adjacencymatrix;
-                NumberOfNodes=n;}
+                 NumberOfNodes=n;}
+
 };
 
 
