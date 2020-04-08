@@ -52,7 +52,7 @@ void ListGraph::AddEdge(Edge edge){
 
 }
 
-void ListGraph::PrintListGraph(){
+void ListGraph::PrintGraph(){
  AdjacencyList *tmp=new AdjacencyList; // tymczasowa lista zeby nie nadpisywac danych
     
     cout << endl << "Graf reprezentowany na liscie sasiedztwa" << endl;

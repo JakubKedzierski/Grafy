@@ -2,7 +2,7 @@
 #include "graph.hh"
 const int maxweight =100000;
 
-class AdjacencyMatGraph
+class AdjacencyMatGraph//:public Graph
 {
 protected:    
     int NumberOfNodes;

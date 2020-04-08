@@ -11,7 +11,7 @@ public:
     AdjacencyList(){next=NULL;Vnode=0;}
 };
 
-class ListGraph
+class ListGraph//:public Graph
 {
 protected:    
     int NumberOfNodes;
@@ -22,7 +22,7 @@ public:
     int GetNumberOfNodes(){return NumberOfNodes;}
     AdjacencyList* GetListOfAdjacency(int Node){return TabOfLists[Node];}
     void AddEdge(Edge edge);
-    void PrintListGraph();
+    void PrintGraph();
     void FillListGraph(double density);
     bool DetectEdge(Edge edge);
     const int GetNumEdg(){return NumberOfEdges;}

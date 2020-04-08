@@ -17,10 +17,10 @@ int main(){
    // g.MatGraph.AddEdge(e1);
     g.MatGraph.AddEdge(e2);g.MatGraph.AddEdge(e3);
     g.List.AddEdge(e2);g.List.AddEdge(e3);
-    g.List.PrintListGraph();
+    g.List.PrintGraph();
     g.MatGraph.PrintGraph();
     
-    g.choice=adjacencylist;
+    //g.choice=adjacencylist;
     int *tab=DijkstraAlgorythm(2,g);
   
 

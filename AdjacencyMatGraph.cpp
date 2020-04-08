@@ -4,6 +4,9 @@
 #include <ctime>
 #include <cmath>
 using namespace std;
+/*Graph::Graph(){}
+Graph::~Graph(){}
+*/
 AdjacencyMatGraph::AdjacencyMatGraph(){}
 
 
