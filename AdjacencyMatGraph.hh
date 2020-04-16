@@ -6,7 +6,7 @@ const int maxweight =100000;
 class AdjacencyMatGraph:public Graph
 {
 protected:    
-    int **matrix;
+    Edge ***matrix;
 public:
 
     AdjacencyMatGraph(){}
@@ -15,7 +15,7 @@ public:
     AdjacencyMatGraph(const AdjacencyMatGraph &graph);   
 
     void AddEdge(int,int,int);
-    double operator()(int Index1,int Index2){return matrix[Index1][Index2];} 
+    Edge *operator()(int Index1,int Index2){return matrix[Index1][Index2];} 
     
     /* Metody wirtualne */
     void FillGraph(double density);

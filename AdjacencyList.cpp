@@ -80,10 +80,10 @@ void ListGraph::PrintGraph(){
 bool ListGraph::DetectEdge(Edge edge){
     AdjacencyList *tmp=new AdjacencyList; // tymczasowa lista zeby nie nadpisywac danych
     
-    tmp=TabOfLists[edge.first];
+    tmp=TabOfLists[edge.V1];
 
        while(tmp){
-           if(tmp->Vnode==edge.second){
+           if(tmp->Vnode==edge.V2){
                return true;
            }
            tmp=tmp->next;

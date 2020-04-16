@@ -8,12 +8,18 @@ using namespace std;
 
 AdjacencyMatGraph::AdjacencyMatGraph(const AdjacencyMatGraph &graph){    
     NumberOfNodes=graph.NumberOfNodes;
-    matrix=new int *[NumberOfNodes];
+    matrix=new Edge **[NumberOfNodes];
     for(int i=0;i<NumberOfNodes;i++){
-        matrix[i]=new int[NumberOfNodes];
-        matrix[i]=graph.matrix[i];
+        matrix[i]=new Edge*[NumberOfNodes];   
     } 
-    
+        for(int i=0;i<NumberOfNodes;i++){
+            for(int j=0;j<NumberOfNodes;j++){
+                if(matrix[i][j])
+                    matrix[i][j]=new Edge;
+            }
+        }     
+    (*this)=graph;
+
 }
 
 
@@ -21,33 +27,26 @@ AdjacencyMatGraph::AdjacencyMatGraph(int NumOfNodes){
     NumberOfNodes=NumOfNodes;
     NumberOfEdges=0;
     PossibleLoop=false;
-    matrix=new int *[NumberOfNodes];
+    matrix=new Edge **[NumberOfNodes];
     for(int i=0;i<NumberOfNodes;i++){
-        matrix[i]=new int[NumberOfNodes];
-    }
-    for(int i=0;i<NumberOfNodes;i++){
-        for(int j=0;j<NumberOfNodes;j++){
-            matrix[i][j]=100000; // maxweight+1 ustawione jako flaga swiadczace ze dane pole jest puste 
-        }                           // zgodnie z konwencja ze gdy mozliwe sa petle w grafie waga polaczenia = 0
-    }                               // a brak polaczenia to nieskonczonosc (w przypadku tej implementacji -> maxweight+1)
-
-    for(int i=0;i<NumberOfNodes;i++){           // do samego siebie -> odgleglosc =0
-        for(int j=0;j<NumberOfNodes;j++){
-            if(i==j){matrix[i][i]=0;}
-        }
+        matrix[i]=new Edge*[NumberOfNodes];
     }
 }
 
 AdjacencyMatGraph::~AdjacencyMatGraph(){
-    delete matrix;
+    delete[] matrix;
 }
 
 void AdjacencyMatGraph::AddEdge(int first,int second, int weight){
     if(first!=second){
-        matrix[first-1][second-1]=weight;
-        matrix[second-1][first-1]=weight;
-    }else{
-        matrix[first-1][second-1]=0;
+        matrix[first-1][second-1]=new Edge;
+        matrix[first-1][second-1]->V1=first;
+        matrix[first-1][second-1]->V2=second;
+        matrix[first-1][second-1]->weight=weight;
+        matrix[second-1][first-1]=new Edge;
+        matrix[second-1][first-1]->weight=weight;
+        matrix[second-1][first-1]->V1=second;
+        matrix[second-1][first-1]->V2=first;
     }
     NumberOfEdges++;
 }
@@ -61,10 +60,10 @@ cout << endl << "Macierz sasiedztwa:" << endl;
         for(int i=0;i<NumberOfNodes;i++){
             cout << setw(4) << i+1 << "|";   
             for(int j=0;j<NumberOfNodes;j++){
-                    if(matrix[i][j]==100000){
+                    if(!matrix[i][j]){
                         cout << " NULL";
                     }else{
-                        cout << setw(5) << matrix[i][j];
+                        cout << setw(5) << (*matrix[i][j]).weight;
                     }
             }
             cout << endl;
@@ -130,24 +129,13 @@ bool AdjacencyMatGraph::ReadFromFile(const char* name){
     file >> BuffNumb[0] >> BuffNumb[1] >> StartingNode;
     StartingNode++;
     if(!file.good()) return false;  // zabezpieczenie
-    
+        
     NumberOfNodes=BuffNumb[1];
     getline(file,buffer);
     
-    matrix= matrix=new int *[NumberOfNodes];       // alokacja miejsca na wczytany graf
+    matrix= matrix=new Edge **[NumberOfNodes];       // alokacja miejsca na wczytany graf
     for(int i=0;i<NumberOfNodes;i++){
-        matrix[i]=new int[NumberOfNodes];
-    }
-
-    for(int i=0;i<NumberOfNodes;i++){           // wstepne wypelnienie grafu
-        for(int j=0;j<NumberOfNodes;j++){
-            matrix[i][j]=100000; 
-        }                           
-    }                              
-    for(int i=0;i<NumberOfNodes;i++){           
-        for(int j=0;j<NumberOfNodes;j++){
-            if(i==j){matrix[i][i]=0;}
-        }
+        matrix[i]=new Edge*[NumberOfNodes];
     }
 
     while(file.good()){                                          // zakladam ze dane w pliku tekstowym sa poprawne (nie skupiam

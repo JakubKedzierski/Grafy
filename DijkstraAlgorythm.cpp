@@ -99,7 +99,6 @@ int* DijkstraAlgorythm(int NodePlus1,ListGraph *graph){
 }
 
 int* DijkstraAlgorythm(int NodePlus1,AdjacencyMatGraph *graph){
-
     int Node=NodePlus1-1;                          // wybrany wierzcholek (jako ze numeracja w tablicy od 0 a numeracja wierzcholkow od 1)                     
     PriorityQueue queue(graph->GetNumberOfNodes()); // tworzymy kolejke priorytetowa przechowujaca max elem =liczba wierzcholkow
     elem nearest;                              // zmienna pomocnicza dla 'wyjetego' z kolejki elementu               
@@ -110,31 +109,46 @@ int* DijkstraAlgorythm(int NodePlus1,AdjacencyMatGraph *graph){
     }
     LengthTab[Node]=0;    
 
+    queue.push(Node,0);          // na potrzeby algorytmu (odleglosc do samego siebie)
+
     for(int i=0;i<graph->GetNumberOfNodes();i++){
-        queue.push(i,(*graph)(Node,i)); 
+        if((*graph)(Node,i))                             // jesli krawedz istnieje
+        queue.push(i,(*graph)(Node,i)->weight); 
     }
+
 
     while(!queue.IsEmpty()){
         nearest=queue.pop();
         
-        for(int i=0;i<graph->GetNumberOfNodes();i++){    
-            if( (LengthTab[nearest.Node]+(*graph)(nearest.Node,i)) < LengthTab[i] ){           
-                LengthTab[i]=LengthTab[nearest.Node]+(*graph)(nearest.Node,i);
+        for(int i=0;i<graph->GetNumberOfNodes();i++){
+            if((*graph)(nearest.Node,i)){      
+                if( (LengthTab[nearest.Node]+(*graph)(nearest.Node,i)->weight) < LengthTab[i] ){           
+                    LengthTab[i]=LengthTab[nearest.Node]+(*graph)(nearest.Node,i)->weight;
+                }
             }
         }
-
+        
     }
 
     return LengthTab;
 }
 
 bool WriteDijkstraToFile(Graph* graph){
-    
+
+    int *DistanceTab=new int[graph->GetNumberOfNodes()];    
+
     if(ListGraph* graph1 = dynamic_cast<ListGraph*>(graph)){
-        DijkstraAlgorythm(graph1->GetStartingNode(),graph1);
+        DistanceTab=DijkstraAlgorythm(graph1->GetStartingNode(),graph1);
     }
 
     if(AdjacencyMatGraph* graph2 = dynamic_cast<AdjacencyMatGraph*>(graph)){
-        DijkstraAlgorythm(graph2->GetStartingNode(),graph2);
+        DistanceTab=DijkstraAlgorythm(graph2->GetStartingNode(),graph2);
+    }
+
+
+    cout << endl << "Odleglosci od wierzcholka startowego " << graph->GetStartingNode() << endl;
+    for(int i=0;i<graph->GetNumberOfNodes();i++){
+        if(DistanceTab[i]!=100000)
+        cout << "Do V" << i+1 <<" "<< DistanceTab[i] << endl;
     }
 }

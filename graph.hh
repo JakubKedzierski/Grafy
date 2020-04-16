@@ -6,7 +6,7 @@ using namespace std;
 class Edge
 {
 public:
-    int first,second,weight;
+    int V1,V2,weight;
 };
 
 class Graph{
@@ -14,7 +14,7 @@ protected:
     int NumberOfNodes;
     int NumberOfEdges;
     bool PossibleLoop;
-    int StartingNode; //     na potrzeby odczytania grafu z pliku i wyliczenia drog
+    int StartingNode; //     na potrzeby odczytania grafu z pliku i wyliczenia drogi
 public:
     const int GetNumberOfNodes()const{return NumberOfNodes;}
     const int GetNumberOfEdges()const{return NumberOfEdges;}
