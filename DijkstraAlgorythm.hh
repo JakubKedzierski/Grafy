@@ -24,3 +24,4 @@ public:
 
 int* DijkstraAlgorythm(int Node,ListGraph *graph);
 int* DijkstraAlgorythm(int Node,AdjacencyMatGraph *graph);
+bool WriteDijkstraToFile(Graph*);

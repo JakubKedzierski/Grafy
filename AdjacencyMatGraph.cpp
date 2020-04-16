@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <cstdlib>
 #include "AdjacencyMatGraph.hh"
 #include <ctime>
@@ -38,19 +39,17 @@ AdjacencyMatGraph::AdjacencyMatGraph(int NumOfNodes){
 }
 
 AdjacencyMatGraph::~AdjacencyMatGraph(){
- //   delete matrix;
+    delete matrix;
 }
 
-
-
-
-void AdjacencyMatGraph::AddEdge(Edge edge){
-    if(edge.first!=edge.second){
-        matrix[edge.first-1][edge.second-1]=edge.weight;
-        matrix[edge.second-1][edge.first-1]=edge.weight;
+void AdjacencyMatGraph::AddEdge(int first,int second, int weight){
+    if(first!=second){
+        matrix[first-1][second-1]=weight;
+        matrix[second-1][first-1]=weight;
     }else{
-        matrix[edge.first-1][edge.second-1]=0;
+        matrix[first-1][second-1]=0;
     }
+    NumberOfEdges++;
 }
 
 void AdjacencyMatGraph::PrintGraph(){
@@ -76,67 +75,89 @@ cout << endl << "Macierz sasiedztwa:" << endl;
  * @brief Przy wypelnianu grafu zastosowalem metode losowania ze zbioru, po to aby nie powtarzaly sie
  * wyniki losowania oraz aby uniknac petli w grafie 
  * 
+ * Algorytm polega na losowaniu krawedzi -> wylosowana krawedz zostaje wyrzucona z puli dostepnych 
+ * krawedzi
+ * 
+ * Dostepne krawedzi to pola w macierzy sasiedztwa. Mozna dostrzec, ze ta macierz jest symetryczna i 
+ * wystarczy wybierac krawedz w gornej czesci
+ * 
+ * 
  * @param density 
  */
 void AdjacencyMatGraph::FillGraph(double density){
     double nv=NumberOfNodes,ne=nv*(nv-1)*density/2;
-    NumberOfEdges=ne;
+
     srand( time( NULL ) );
-
-
-    if(density==1){  // w przypadku pelnego grafu przyspieszamy wypelnianie grafu
-        for(int i=0;i<NumberOfNodes;i++){  // tu jest niefajnie
-            for(int j=0;j<NumberOfNodes;j++){
-                if(i!=j){
-                    matrix[i][j]=rand() %1000+1;
-                    matrix[j][i]=matrix[i][j];
-                }
-            }
-                
-        }
-        return ;
-    }
-    
-    int RandNum=0,Edgenum=(NumberOfNodes*NumberOfNodes-NumberOfNodes),div=1; // edgenum wlasciwa max liczba kraawedzi po odjeciu bez loop
-    int *RandTab=new int [Edgenum];
+    int EndOfMatrix=NumberOfNodes,Jump=2;  
+    int RandNum=2,AllEdges=(NumberOfNodes*(NumberOfNodes-1))/2; // AllEdges - wszystkie krawedzie (nie liczymy podwojnie jednej krawedzi)
+    int *AllEdgesTab=new int [AllEdges];
 
    
-    for(int i=0;i<Edgenum;i++){
-        ++RandNum;
-        if(RandNum==div){
-            RandNum++;
-            div+=NumberOfNodes+1;
+    for(int i=0;i<AllEdges;i++){
+        AllEdgesTab[i]=RandNum;
+        RandNum++;
+        if(RandNum>EndOfMatrix){
+            EndOfMatrix+=NumberOfNodes;
+            RandNum+=Jump;
+            Jump++;
         }
-        RandTab[i]=RandNum;
     }
 
-    int Num=NumberOfEdges,row,col,p=0;
+    int Num=ne,row=0,col=0,iterator=0;
     double choice;
  
     while(Num){
-        p++;
-        RandNum=rand() %Num;
-        choice=RandTab[RandNum];
-        RandTab[RandNum]=RandTab[Edgenum-p];     // to chyba nie jest dobrze bo dalej mozemy trafic 4-3 a pozniej 3-4
-
-        // spostzezenie -> wystarczy losowac z dolu lub z gory przekatnej
-
-        --Num;
+        iterator++;                   // licznik przejscia petli -> do zmniejszania liczby dostepnych krawedzi  
+        RandNum=rand() %Num;          // wybieramy krawedz ze zbioru 
+        choice=AllEdgesTab[RandNum];
+        AllEdgesTab[RandNum]=AllEdgesTab[AllEdges-iterator];      // Wyrzucamy wylosowana krawedz poza tablice
+        --Num;                                    // i zmniejszamy liczbe dostepnnych krawedzi do losowania                              
         row=ceil(choice/NumberOfNodes)-1;
         col=choice-row*NumberOfNodes-1;
-        matrix[row][col]=rand()%1000+1;
-        matrix[col][row]=matrix[row][col];
-
+        AddEdge(row+1,col+1,(rand()%1000+1));
     }
 
-
-
-// Przeniesc to myslenie do listy tam tez powinno smigac
 }
 
-bool AdjacencyMatGraph::WriteToFile() const{
+bool AdjacencyMatGraph::ReadFromFile(const char* name){
 
-}
-bool AdjacencyMatGraph::ReadFromFile(){
+    ifstream file;
+    file.open(name,ifstream::in);
+    if(!file.good()) return false;
 
+    int BuffNumb[3];
+    string buffer;
+    file >> BuffNumb[0] >> BuffNumb[1] >> StartingNode;
+    StartingNode++;
+    if(!file.good()) return false;  // zabezpieczenie
+    
+    NumberOfNodes=BuffNumb[1];
+    getline(file,buffer);
+    
+    matrix= matrix=new int *[NumberOfNodes];       // alokacja miejsca na wczytany graf
+    for(int i=0;i<NumberOfNodes;i++){
+        matrix[i]=new int[NumberOfNodes];
+    }
+
+    for(int i=0;i<NumberOfNodes;i++){           // wstepne wypelnienie grafu
+        for(int j=0;j<NumberOfNodes;j++){
+            matrix[i][j]=100000; 
+        }                           
+    }                              
+    for(int i=0;i<NumberOfNodes;i++){           
+        for(int j=0;j<NumberOfNodes;j++){
+            if(i==j){matrix[i][i]=0;}
+        }
+    }
+
+    while(file.good()){                                          // zakladam ze dane w pliku tekstowym sa poprawne (nie skupiam
+                                                                // sie na obsludze bledow)
+        file >> BuffNumb[0] >> BuffNumb[1] >> BuffNumb[2];
+        AddEdge(BuffNumb[0]+1,BuffNumb[1]+1,BuffNumb[2]);  // +1 poniewaz w wymaganiach jest numeracja od 0 a moja implementacja
+                                                             // zaklada numeracje od 1 
+        getline(file,buffer);
+    }
+
+    file.close();
+    return true;
 }

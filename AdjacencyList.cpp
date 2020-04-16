@@ -1,9 +1,11 @@
 #include <iostream>
 #include <cstdlib>
+#include <ctime>
+#include <fstream>
+#include <cmath>
 #include "AdjacencyList.hh"
 #include "graph.hh"
-#include <ctime>
-#include <unistd.h>
+
 using namespace std;
 ListGraph::ListGraph(){}
 
@@ -27,29 +29,28 @@ ListGraph::ListGraph(const ListGraph &graph){
 }
 
 
-void ListGraph::AddEdge(Edge edge){
+void ListGraph::AddEdge(int first,int second,int weight){
 
-    if(edge.first==edge.second &&!PossibleLoop){
+    if(first==second &&!PossibleLoop){
         cout << "Graf bez petli! Nie mozna dodac krawedzi";
         return;
     }
 
     AdjacencyList *Node=new AdjacencyList;
-    Node->Vnode=edge.second; // dodanie drugiego wierzcholka
-    Node->weightTo=edge.weight;
-    Node->next=TabOfLists[edge.first];       // Dodanie w drugim wskaznika na pierwszy (sasiad pierwszego)    
+    Node->Vnode=second; // dodanie drugiego wierzcholka
+    Node->weightTo=weight;
+    Node->next=TabOfLists[first];       // Dodanie w drugim wskaznika na pierwszy (sasiad pierwszego)    
                                             // dodajemy wierzcholki na poczatek listy 
-    TabOfLists[edge.first]=Node;
+    TabOfLists[first]=Node;
 
     /* To samo z drugim wierzcholkiem*/
     Node=new AdjacencyList;
-    Node->Vnode=edge.first;
-    Node->weightTo=edge.weight; 
-    Node->next=TabOfLists[edge.second];     
+    Node->Vnode=first;
+    Node->weightTo=weight; 
+    Node->next=TabOfLists[second];     
                                             
-    TabOfLists[edge.second]=Node;
-
-
+    TabOfLists[second]=Node;
+    NumberOfEdges++;
 }
 
 void ListGraph::PrintGraph(){
@@ -90,87 +91,72 @@ bool ListGraph::DetectEdge(Edge edge){
     return false;
 }
 
+
 void ListGraph::FillGraph(double density){
-    int counter=0; 
-    NumberOfEdges=NumberOfNodes*(NumberOfNodes-1)*density/2;
+    // Moj algorytm wypelniania listy dziala na tej samej zasadzie co wypelnianie macierzy sasiedztwa
+    // W pliku AdjacencyMatGraph.cpp znajduje sie dokladniejszy opis tego algorytmu
+    double nv=NumberOfNodes,ne=nv*(nv-1)*density/2;
+
     srand( time( NULL ) );
-    Edge edge1;
-    int *first =new int[NumberOfNodes+1],*second=new int[NumberOfNodes+1];
-    int ToRand=NumberOfNodes;
-    
-    for(int i=1;i<NumberOfNodes+1;i++){
-        first[i]=i;
-        second[i]=i;
+    int EndOfMatrix=NumberOfNodes,Jump=2;  
+    int RandNum=2,AllEdges=(NumberOfNodes*(NumberOfNodes-1))/2; // AllEdges - wszystkie krawedzie (nie liczymy podwojnie jednej krawedzi)
+    int *AllEdgesTab=new int [AllEdges];
+
+    srand( time( NULL ) );
+
+    for(int i=0;i<AllEdges;i++){
+        AllEdgesTab[i]=RandNum;
+        RandNum++;
+        if(RandNum>EndOfMatrix){
+            EndOfMatrix+=NumberOfNodes;
+            RandNum+=Jump;
+            Jump++;
+        }
     }
 
- // Dla pelnych grafow  
-    if((int)density){ // dla pelnego grafu
-        for(int i=1;i<NumberOfNodes;i++){
-            for(int j=i+1;j<NumberOfNodes+1;j++){
-                edge1.weight=rand() %1000;
-                edge1.first=i;
-                edge1.second=j;
-                AddEdge(edge1);
-            }
-        }
-        return;
+    int Num=ne,row=0,col=0,iterator=0;
+    double choice;
+ 
+    while(Num){
+        iterator++;                   // licznik przejscia petli -> do zmniejszania liczby dostepnych krawedzi  
+        RandNum=rand() %Num;          // wybieramy krawedz ze zbioru 
+        choice=AllEdgesTab[RandNum];
+        AllEdgesTab[RandNum]=AllEdgesTab[AllEdges-iterator];      // Wyrzucamy wylosowana krawedz poza tablice
+        --Num;                                    // i zmniejszamy liczbe dostepnnych krawedzi do losowania                              
+        row=ceil(choice/NumberOfNodes)-1;
+        col=choice-row*NumberOfNodes-1;
+        AddEdge(row+1,col+1,(rand()%1000+1));
     }
-
-
-                                                    // niewydajna to jest do zmiany
-    for(int i=0;i<NumberOfEdges;i++){
-        edge1.weight=rand() %1000+1;
-        edge1.first=first[rand()%ToRand+1];
-        edge1.second=second[rand()%ToRand+1];
-        
-        if((edge1.second==edge1.first) && (!PossibleLoop)){
-            if(edge1.second<NumberOfNodes){
-                edge1.second++;
-            }else{
-                edge1.second--;
-            }
-        }
-
-        counter=0;
-        while(DetectEdge(edge1)){
-            
-            counter++;
-            edge1.second=second[rand()%ToRand+1];
-         
-            if((edge1.second==edge1.first) && (!PossibleLoop)){
-                if(edge1.second<NumberOfNodes){
-                    edge1.second++;
-                }else{
-                    edge1.second--;
-                }
-            }
-            if(counter==NumberOfNodes-1){
-                break;
-            }
-        }
-
-        if(!(counter==NumberOfNodes-1)){
-            AddEdge(edge1);
-        }else{
-            i--;
-            first[edge1.first]=first[ToRand];
-            second[edge1.first]=second[ToRand];
-            ToRand--;
-            
-            if(!ToRand)
-            return;
-        }
-        
-
-    }
-
     
 }
 
-bool ListGraph::WriteToFile() const{
 
-}
-
-bool ListGraph::ReadFromFile(){
+bool ListGraph::ReadFromFile(const char* name){
     
+    ifstream file;
+    file.open(name,ifstream::in);
+    
+    if(!file.good()) return false;
+
+    int BuffNumb[3];
+    string buffer;
+    file >> BuffNumb[0] >> BuffNumb[1] >> StartingNode;
+    StartingNode++; //numeracja od 0
+    
+    if(!file.good()) return false;  // zabezpieczenie
+    
+    NumberOfNodes=BuffNumb[1];
+    getline(file,buffer);
+    
+    TabOfLists=new AdjacencyList* [NumberOfNodes+1];
+
+    while(file.good()){
+        file >> BuffNumb[0] >> BuffNumb[1] >> BuffNumb[2];
+        AddEdge(BuffNumb[0]+1,BuffNumb[1]+1,BuffNumb[2]);    // +1 poniewaz w wymaganiach jest numeracja od 0 a moja implementacja
+                                                        // zaklada numeracje od 1  
+        getline(file,buffer);
+    }
+
+    file.close();
+    return true;
 }

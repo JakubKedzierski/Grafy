@@ -2,8 +2,7 @@
 
 //u1 Trzeba zaznaczyc ze ta kolejka priorytetowa zostalaa dostosowana do moich potrzeb
 
-//u2 W moim przypadku w algorytmie jest jedno zbdne porownanie (switch) mozna byloby 2 algorytmy jeden dla
-// matrixa drugi dla listy ale czas wychodzil ten sam, operacja porownanie nie zajmuje az tyle czasu
+
 
 void PriorityQueue::push(int Node,int AddPriority){
     int son=n++,father;
@@ -61,7 +60,7 @@ void PriorityQueue::PrintQueue(){
 }
 
 int* DijkstraAlgorythm(int NodePlus1,ListGraph *graph){
-    
+
     int Node=NodePlus1-1;                          // wybrany wierzcholek (jako ze numeracja w tablicy od 0 a numeracja wierzcholkow od 1)                     
     PriorityQueue queue(graph->GetNumberOfNodes()); // tworzymy kolejke priorytetowa przechowujaca max elem =liczba wierzcholkow
     elem nearest;                              // zmienna pomocnicza dla 'wyjetego' z kolejki elementu               
@@ -112,7 +111,7 @@ int* DijkstraAlgorythm(int NodePlus1,AdjacencyMatGraph *graph){
     LengthTab[Node]=0;    
 
     for(int i=0;i<graph->GetNumberOfNodes();i++){
-        queue.push(i,(*graph)(Node,i)); // na kolejke dodaja sie tez wierzcholki ktore nie istnieja - bardzo niepotrzebne
+        queue.push(i,(*graph)(Node,i)); 
     }
 
     while(!queue.IsEmpty()){
@@ -127,4 +126,15 @@ int* DijkstraAlgorythm(int NodePlus1,AdjacencyMatGraph *graph){
     }
 
     return LengthTab;
+}
+
+bool WriteDijkstraToFile(Graph* graph){
+    
+    if(ListGraph* graph1 = dynamic_cast<ListGraph*>(graph)){
+        DijkstraAlgorythm(graph1->GetStartingNode(),graph1);
+    }
+
+    if(AdjacencyMatGraph* graph2 = dynamic_cast<AdjacencyMatGraph*>(graph)){
+        DijkstraAlgorythm(graph2->GetStartingNode(),graph2);
+    }
 }
