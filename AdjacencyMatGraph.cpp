@@ -7,6 +7,7 @@
 using namespace std;
 
 AdjacencyMatGraph::AdjacencyMatGraph(const AdjacencyMatGraph &graph){    
+ 
     NumberOfNodes=graph.NumberOfNodes;
     matrix=new Edge **[NumberOfNodes];
     for(int i=0;i<NumberOfNodes;i++){
@@ -18,7 +19,7 @@ AdjacencyMatGraph::AdjacencyMatGraph(const AdjacencyMatGraph &graph){
                     matrix[i][j]=new Edge;
             }
         }     
-    (*this)=graph;
+   (*this)=graph;
 
 }
 
@@ -26,14 +27,31 @@ AdjacencyMatGraph::AdjacencyMatGraph(const AdjacencyMatGraph &graph){
 AdjacencyMatGraph::AdjacencyMatGraph(int NumOfNodes){
     NumberOfNodes=NumOfNodes;
     NumberOfEdges=0;
+    StartingNode=1;
     PossibleLoop=false;
     matrix=new Edge **[NumberOfNodes];
     for(int i=0;i<NumberOfNodes;i++){
         matrix[i]=new Edge*[NumberOfNodes];
     }
+    for(int i=0;i<NumberOfNodes;i++){
+            for(int j=0;j<NumberOfNodes;j++){
+                matrix[i][j]=NULL;
+        }
+    }
 }
 
 AdjacencyMatGraph::~AdjacencyMatGraph(){
+    for(int i=0;i<NumberOfNodes;i++){
+        for(int j=0;j<NumberOfNodes;j++){
+            if(matrix[i][j])
+                delete[] matrix[i][j];
+        }
+    }
+
+    for(int i=0;i<NumberOfNodes;i++){
+        delete[] matrix[i];
+    }
+
     delete[] matrix;
 }
 
@@ -47,8 +65,8 @@ void AdjacencyMatGraph::AddEdge(int first,int second, int weight){
         matrix[second-1][first-1]->weight=weight;
         matrix[second-1][first-1]->V1=second;
         matrix[second-1][first-1]->V2=first;
+        NumberOfEdges++;
     }
-    NumberOfEdges++;
 }
 
 void AdjacencyMatGraph::PrintGraph(){
@@ -85,36 +103,32 @@ cout << endl << "Macierz sasiedztwa:" << endl;
  */
 void AdjacencyMatGraph::FillGraph(double density){
     double nv=NumberOfNodes,ne=nv*(nv-1)*density/2;
-
     srand( time( NULL ) );
-    int EndOfMatrix=NumberOfNodes,Jump=2;  
-    int RandNum=2,AllEdges=(NumberOfNodes*(NumberOfNodes-1))/2; // AllEdges - wszystkie krawedzie (nie liczymy podwojnie jednej krawedzi)
-    int *AllEdgesTab=new int [AllEdges];
 
-   
-    for(int i=0;i<AllEdges;i++){
-        AllEdgesTab[i]=RandNum;
-        RandNum++;
-        if(RandNum>EndOfMatrix){
-            EndOfMatrix+=NumberOfNodes;
-            RandNum+=Jump;
-            Jump++;
+    if(density==1){
+        for(int i=0;i<NumberOfNodes;i++){
+            for(int j=0;j<NumberOfNodes;j++){
+                if(i!=j){
+                    if(!matrix[i][j]){
+                        AddEdge(i+1,j+1,(rand()%1000+1));
+                    }
+                }
+            }
         }
+        return;
     }
 
-    int Num=ne,row=0,col=0,iterator=0;
-    double choice;
- 
-    while(Num){
-        iterator++;                   // licznik przejscia petli -> do zmniejszania liczby dostepnych krawedzi  
-        RandNum=rand() %Num;          // wybieramy krawedz ze zbioru 
-        choice=AllEdgesTab[RandNum];
-        AllEdgesTab[RandNum]=AllEdgesTab[AllEdges-iterator];      // Wyrzucamy wylosowana krawedz poza tablice
-        --Num;                                    // i zmniejszamy liczbe dostepnnych krawedzi do losowania                              
-        row=ceil(choice/NumberOfNodes)-1;
-        col=choice-row*NumberOfNodes-1;
-        AddEdge(row+1,col+1,(rand()%1000+1));
-    }
+    int loops=ne,row=0,col=0;
+    while(loops){
+        row=rand()%NumberOfNodes+1;
+        col=rand()%NumberOfNodes+1;
+        if(row!=col){
+            if(!matrix[row-1][col-1]){
+                AddEdge(row,col,rand()%1000+1);
+                loops--;
+            }
+        }
+    } 
 
 }
 
@@ -149,3 +163,4 @@ bool AdjacencyMatGraph::ReadFromFile(const char* name){
     file.close();
     return true;
 }
+

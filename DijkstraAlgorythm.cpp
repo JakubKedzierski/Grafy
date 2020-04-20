@@ -1,11 +1,26 @@
 #include "DijkstraAlgorythm.hh"
+#include <fstream>
 
 //u1 Trzeba zaznaczyc ze ta kolejka priorytetowa zostalaa dostosowana do moich potrzeb
 
 
+void PriorityQueue::IncreaseSize(int n){
+    elem *NewQueue=new elem[2*n];          // zwiekszamy pamiec aby nie przekroczyc gornego limitu ( od razu 2 krotnie aby nie tracic czasu na 
+                                           // przepisywanie danych )
+    for(int i=0;i<MaxSize;i++){
+        NewQueue[i]=queue[i];        
+    }
+    delete[] queue;
+    MaxSize=2*n;
+    queue=NewQueue;  
+}
 
 void PriorityQueue::push(int Node,int AddPriority){
     int son=n++,father;
+
+    if(n>=MaxSize){
+        IncreaseSize(n);
+    }
 
     father=(son-1)/2;
     while(son>0 && queue[father].priority>AddPriority){  // naprawa kopca - najmniejszy element na szczycie kopca
@@ -59,10 +74,27 @@ void PriorityQueue::PrintQueue(){
     }
 }
 
-int* DijkstraAlgorythm(int NodePlus1,ListGraph *graph){
+void PrintPath(ostream& os,int source,int* ParentTab){
+
+    if(ParentTab[source]==-1) return  ;
+
+    PrintPath(os,ParentTab[source],ParentTab);    
+
+    os << "-> " << source+1  ;
+}
+
+/**
+ * @brief 
+ * 
+ * @param NodePlus1 
+ * @param graph 
+ * @param ParentTab - tablica z poprzednikami, dzieki niej mozliwe jest odtworzenie sciezki do wierzcholka koncowego
+ * @return int* 
+ */
+int* DijkstraAlgorythm(int NodePlus1,ListGraph *graph,int *ParentTab){
 
     int Node=NodePlus1-1;                          // wybrany wierzcholek (jako ze numeracja w tablicy od 0 a numeracja wierzcholkow od 1)                     
-    PriorityQueue queue(graph->GetNumberOfNodes()); // tworzymy kolejke priorytetowa przechowujaca max elem =liczba wierzcholkow
+    PriorityQueue queue(2*graph->GetNumberOfNodes()); // tworzymy kolejke priorytetowa przechowujaca max elem =liczba wierzcholkow
     elem nearest;                              // zmienna pomocnicza dla 'wyjetego' z kolejki elementu               
     int *LengthTab= new int[graph->GetNumberOfNodes()];  // tablica przechowujaca odleglosci do pozostalych wierzcholkow
 
@@ -70,7 +102,8 @@ int* DijkstraAlgorythm(int NodePlus1,ListGraph *graph){
         LengthTab[i]=100000;
     }
     LengthTab[Node]=0;                            // dla wybranego wierzcholka odleglosc do samego siebie to 0
-    
+    ParentTab[Node]=-1;
+
     AdjacencyList *tmp=new AdjacencyList; // tymczasowa lista zeby nie nadpisywac danych
     tmp=graph->GetListOfAdjacency(NodePlus1);
        
@@ -88,6 +121,8 @@ int* DijkstraAlgorythm(int NodePlus1,ListGraph *graph){
         while(tmp){                            // dla wszystkich sasiadow wyjetego z kolejki wierzcholka
             if( (LengthTab[nearest.Node-1]+tmp->weightTo) < LengthTab[tmp->Vnode-1] ){           
                 LengthTab[tmp->Vnode-1]=LengthTab[nearest.Node-1]+tmp->weightTo;
+                queue.push((tmp->Vnode),LengthTab[tmp->Vnode-1]);
+                ParentTab[tmp->Vnode-1]=nearest.Node-1;
             }
             tmp=tmp->next;                    // przesuwamy sie po sasiadach
         }
@@ -98,16 +133,17 @@ int* DijkstraAlgorythm(int NodePlus1,ListGraph *graph){
 
 }
 
-int* DijkstraAlgorythm(int NodePlus1,AdjacencyMatGraph *graph){
+int* DijkstraAlgorythm(int NodePlus1,AdjacencyMatGraph *graph,int *ParentTab){
     int Node=NodePlus1-1;                          // wybrany wierzcholek (jako ze numeracja w tablicy od 0 a numeracja wierzcholkow od 1)                     
-    PriorityQueue queue(graph->GetNumberOfNodes()); // tworzymy kolejke priorytetowa przechowujaca max elem =liczba wierzcholkow
+    PriorityQueue queue(2*graph->GetNumberOfNodes()); // tworzymy kolejke priorytetowa przechowujaca max elem =liczba wierzcholkow
     elem nearest;                              // zmienna pomocnicza dla 'wyjetego' z kolejki elementu               
     int *LengthTab= new int[graph->GetNumberOfNodes()];  // tablica przechowujaca odleglosci do pozostalych wierzcholkow
-
+    
     for(int i=0;i<graph->GetNumberOfNodes();i++){      // Przypisanie naszej flagi (brak polaczenia z wierzcholkiem)
         LengthTab[i]=100000;
     }
-    LengthTab[Node]=0;    
+    LengthTab[Node]=0;
+    ParentTab[Node]=-1;    
 
     queue.push(Node,0);          // na potrzeby algorytmu (odleglosc do samego siebie)
 
@@ -119,11 +155,13 @@ int* DijkstraAlgorythm(int NodePlus1,AdjacencyMatGraph *graph){
 
     while(!queue.IsEmpty()){
         nearest=queue.pop();
-        
+      
         for(int i=0;i<graph->GetNumberOfNodes();i++){
             if((*graph)(nearest.Node,i)){      
                 if( (LengthTab[nearest.Node]+(*graph)(nearest.Node,i)->weight) < LengthTab[i] ){           
                     LengthTab[i]=LengthTab[nearest.Node]+(*graph)(nearest.Node,i)->weight;
+                    queue.push(i,LengthTab[i]);
+                    ParentTab[i]=nearest.Node;
                 }
             }
         }
@@ -133,22 +171,34 @@ int* DijkstraAlgorythm(int NodePlus1,AdjacencyMatGraph *graph){
     return LengthTab;
 }
 
-bool WriteDijkstraToFile(Graph* graph){
+bool WriteDijkstraOut(Graph* graph,const char* name){
+    int *ParentTab=new int[graph->GetNumberOfNodes()];
+    ofstream file(name);
+    if(!file.good()) return false;
 
     int *DistanceTab=new int[graph->GetNumberOfNodes()];    
 
     if(ListGraph* graph1 = dynamic_cast<ListGraph*>(graph)){
-        DistanceTab=DijkstraAlgorythm(graph1->GetStartingNode(),graph1);
+        DistanceTab=DijkstraAlgorythm(graph1->GetStartingNode(),graph1,ParentTab);
     }
 
     if(AdjacencyMatGraph* graph2 = dynamic_cast<AdjacencyMatGraph*>(graph)){
-        DistanceTab=DijkstraAlgorythm(graph2->GetStartingNode(),graph2);
+        DistanceTab=DijkstraAlgorythm(graph2->GetStartingNode(),graph2,ParentTab);
     }
 
 
-    cout << endl << "Odleglosci od wierzcholka startowego " << graph->GetStartingNode() << endl;
+    file <<  "Odleglosci od wierzcholka startowego nr " << graph->GetStartingNode() << endl;
+    file << "Format danych: [Wierzcholek Koncowy] : [koszt drogi] | [kolejne wierzcholki liczac od wierzcholka startowego]" << endl;
     for(int i=0;i<graph->GetNumberOfNodes();i++){
-        if(DistanceTab[i]!=100000)
-        cout << "Do V" << i+1 <<" "<< DistanceTab[i] << endl;
+        if(DistanceTab[i]!=100000){
+            file << setw(2) << i+1 <<": "<< setw(4) <<  DistanceTab[i] <<" | " << graph->GetStartingNode();
+            PrintPath(file,i,ParentTab);
+            file << endl;
+        }else{
+            file << setw(2) << i+1 <<": "<< setw(4) << "NULL - brak polaczenia"  << endl;
+        }
     }
+
+    file.close();
+    return true;
 }

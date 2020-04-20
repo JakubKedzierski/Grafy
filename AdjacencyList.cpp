@@ -12,11 +12,26 @@ ListGraph::ListGraph(){}
 ListGraph::ListGraph(int number){
     NumberOfNodes=number;
     TabOfLists=new AdjacencyList* [number+1];
+    for(int i=0;i<number+1;i++){
+        TabOfLists[i]=NULL;
+    }
     PossibleLoop=false;
 }
 ListGraph::~ListGraph()
 {
-    //delete List;
+    AdjacencyList *tmp,*tmp2;
+    
+    for(int i=1;i<NumberOfNodes+1;i++){
+        tmp=TabOfLists[i];
+        while(tmp){
+            tmp2=tmp;
+            tmp=tmp->next;
+            delete tmp2;
+        }
+    }
+
+    delete[] TabOfLists;
+    
 }
 
 
@@ -77,13 +92,13 @@ void ListGraph::PrintGraph(){
     cout << endl;
 }
 
-bool ListGraph::DetectEdge(Edge edge){
+bool ListGraph::DetectEdge(int V1,int V2){
     AdjacencyList *tmp=new AdjacencyList; // tymczasowa lista zeby nie nadpisywac danych
     
-    tmp=TabOfLists[edge.V1];
+    tmp=TabOfLists[V1];
 
        while(tmp){
-           if(tmp->Vnode==edge.V2){
+           if(tmp->Vnode==V2){
                return true;
            }
            tmp=tmp->next;
@@ -91,43 +106,68 @@ bool ListGraph::DetectEdge(Edge edge){
     return false;
 }
 
-
+/**
+ * @brief myeslenie jak w macierzy
+ * 
+ * @param density 
+ */
 void ListGraph::FillGraph(double density){
-    // Moj algorytm wypelniania listy dziala na tej samej zasadzie co wypelnianie macierzy sasiedztwa
-    // W pliku AdjacencyMatGraph.cpp znajduje sie dokladniejszy opis tego algorytmu
-    double nv=NumberOfNodes,ne=nv*(nv-1)*density/2;
-
-    srand( time( NULL ) );
-    int EndOfMatrix=NumberOfNodes,Jump=2;  
-    int RandNum=2,AllEdges=(NumberOfNodes*(NumberOfNodes-1))/2; // AllEdges - wszystkie krawedzie (nie liczymy podwojnie jednej krawedzi)
-    int *AllEdgesTab=new int [AllEdges];
-
-    srand( time( NULL ) );
-
-    for(int i=0;i<AllEdges;i++){
-        AllEdgesTab[i]=RandNum;
-        RandNum++;
-        if(RandNum>EndOfMatrix){
-            EndOfMatrix+=NumberOfNodes;
-            RandNum+=Jump;
-            Jump++;
+    int **matrix=new int*[NumberOfNodes];
+    for(int i=0;i<NumberOfNodes;i++){
+        matrix[i]=new int[NumberOfNodes];
+    }
+   
+    for(int i=0;i<NumberOfNodes;i++){
+        for(int j=0;j<NumberOfNodes;j++){
+            matrix[i][j]=0;
         }
     }
-
-    int Num=ne,row=0,col=0,iterator=0;
-    double choice;
- 
-    while(Num){
-        iterator++;                   // licznik przejscia petli -> do zmniejszania liczby dostepnych krawedzi  
-        RandNum=rand() %Num;          // wybieramy krawedz ze zbioru 
-        choice=AllEdgesTab[RandNum];
-        AllEdgesTab[RandNum]=AllEdgesTab[AllEdges-iterator];      // Wyrzucamy wylosowana krawedz poza tablice
-        --Num;                                    // i zmniejszamy liczbe dostepnnych krawedzi do losowania                              
-        row=ceil(choice/NumberOfNodes)-1;
-        col=choice-row*NumberOfNodes-1;
-        AddEdge(row+1,col+1,(rand()%1000+1));
-    }
     
+
+    double nv=NumberOfNodes,ne=nv*(nv-1)*density/2;
+    srand( time( NULL ) );
+    int loops=ne,row=0,col=0;
+
+    int i=0,j=0;
+    if(density==1){
+        for(i=0;i<NumberOfNodes;i++){
+            for(j=0;j<NumberOfNodes;j++){
+                if(j!=i){
+                    if(matrix[i][j]==0){
+                        matrix[i][j]=15;
+                        matrix[j][i]=15;
+                    }
+                }
+            }
+        }
+    }else{
+        while(loops){
+            row=rand()%NumberOfNodes+1;
+            col=rand()%NumberOfNodes+1;
+            if(row!=col){
+                if(matrix[row-1][col-1]==0){
+                    matrix[row-1][col-1]=15;
+                    matrix[col-1][row-1]=15;
+                    loops--;
+                }
+            }
+        } 
+    }
+
+    for(int i=0;i<NumberOfNodes;i++){
+        for(int j=i+1;j<NumberOfNodes;j++){
+            if(matrix[i][j]==15){
+                AddEdge(i+1,j+1,rand()%1000+1);
+            }
+        }
+
+    }
+
+    for(int i=0;i<NumberOfNodes;i++){
+        delete[] matrix[i];
+    }
+
+    delete[] matrix;
 }
 
 

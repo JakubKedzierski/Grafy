@@ -6,7 +6,7 @@ struct AdjacencyList
 {
     AdjacencyList *next;
     int Vnode,weightTo; //wierzcholek
-    AdjacencyList(){next=NULL;Vnode=0;}
+
 };
 
 class ListGraph:public Graph
@@ -21,7 +21,7 @@ public:
     ~ListGraph();
     AdjacencyList* GetListOfAdjacency(int Node){return TabOfLists[Node];}
     void AddEdge(int,int,int);
-    bool DetectEdge(Edge edge);
+    bool DetectEdge(int,int);
 
     /* Metody wirtualne */
     void PrintGraph();

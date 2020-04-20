@@ -15,7 +15,8 @@ public:
     AdjacencyMatGraph(const AdjacencyMatGraph &graph);   
 
     void AddEdge(int,int,int);
-    Edge *operator()(int Index1,int Index2){return matrix[Index1][Index2];} 
+    Edge *operator()(int Index1,int Index2){return matrix[Index1][Index2];}
+//*incidentEdges(); 
     
     /* Metody wirtualne */
     void FillGraph(double density);

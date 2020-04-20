@@ -19,6 +19,7 @@ public:
     const int GetNumberOfNodes()const{return NumberOfNodes;}
     const int GetNumberOfEdges()const{return NumberOfEdges;}
     const int GetStartingNode()const{return StartingNode;}
+    void NewStartingNode(int Start){StartingNode=Start;}
     virtual void PrintGraph()=0;
     virtual void FillGraph(double density)=0;
     virtual bool ReadFromFile(const char* name)=0;
