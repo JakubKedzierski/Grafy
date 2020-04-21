@@ -1,13 +1,8 @@
 #pragma once
 #include <iostream>
 #include <iomanip>
+#include "AdjacencyList.hh"
 using namespace std;
-
-class Edge
-{
-public:
-    int V1,V2,weight;
-};
 
 class Graph{
 protected:    
@@ -20,9 +15,10 @@ public:
     const int GetNumberOfEdges()const{return NumberOfEdges;}
     const int GetStartingNode()const{return StartingNode;}
     void NewStartingNode(int Start){StartingNode=Start;}
-    virtual void PrintGraph()=0;
+    virtual void PrintGraph()const=0;
     virtual void FillGraph(double density)=0;
     virtual bool ReadFromFile(const char* name)=0;
+    virtual List incidentEdges(int)const=0;
     virtual ~Graph(){}
     Graph(){}
     Graph(int N){NumberOfNodes=N;}

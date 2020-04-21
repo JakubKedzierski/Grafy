@@ -1,0 +1,37 @@
+    int Node=NodePlus1-1;                          // wybrany wierzcholek (jako ze numeracja w tablicy od 0 a numeracja wierzcholkow od 1)                     
+    PriorityQueue queue(2*graph->GetNumberOfNodes()); // tworzymy kolejke priorytetowa przechowujaca max elem =liczba wierzcholkow
+    elem nearest;                              // zmienna pomocnicza dla 'wyjetego' z kolejki elementu               
+    int *LengthTab= new int[graph->GetNumberOfNodes()];  // tablica przechowujaca odleglosci do pozostalych wierzcholkow
+    
+    for(int i=0;i<graph->GetNumberOfNodes();i++){      // Przypisanie naszej flagi (brak polaczenia z wierzcholkiem)
+        LengthTab[i]=100000;
+    }
+    LengthTab[Node]=0;
+    ParentTab[Node]=-1;    
+
+    adjacencyListElem *tmp=new adjacencyListElem;
+    tmp=graph->incidentEdges(Node).Head();
+
+    queue.push(NodePlus1,0);          // na potrzeby algorytmu (odleglosc do samego siebie)
+
+    while(tmp){
+        queue.push(tmp->edge.V2,tmp->edge.weight);
+        tmp=tmp->next;
+    }
+
+    while(!queue.IsEmpty()){
+        nearest=queue.pop();
+        tmp=graph->incidentEdges(nearest.Node-1).Head();
+        
+        while(tmp){                            // dla wszystkich sasiadow wyjetego z kolejki wierzcholka
+            if( (LengthTab[nearest.Node-1]+tmp->edge.weight) < LengthTab[tmp->edge.V2-1] ){           
+                LengthTab[tmp->edge.V2-1]=LengthTab[nearest.Node-1]+tmp->edge.weight;
+                queue.push((tmp->edge.V2),LengthTab[tmp->edge.V2-1]);
+                ParentTab[tmp->edge.V2-1]=nearest.Node-1;
+            }
+            tmp=tmp->next;                    // przesuwamy sie po sasiadach
+        }
+        
+    }
+
+    return LengthTab;

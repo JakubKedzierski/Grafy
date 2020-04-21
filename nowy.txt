@@ -1,0 +1,7 @@
+Odleglosci od wierzcholka startowego nr 1
+Format danych: [Wierzcholek Koncowy] : [koszt drogi] | [kolejne wierzcholki liczac od wierzcholka startowego]
+ 1:    0 | 1
+ 2:  514 | 1-> 3-> 2
+ 3:  447 | 1-> 3
+ 4:  847 | 1-> 3-> 4
+ 5:  816 | 1-> 3-> 2-> 5

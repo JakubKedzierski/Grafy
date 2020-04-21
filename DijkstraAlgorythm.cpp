@@ -104,25 +104,28 @@ int* DijkstraAlgorythm(int NodePlus1,ListGraph *graph,int *ParentTab){
     LengthTab[Node]=0;                            // dla wybranego wierzcholka odleglosc do samego siebie to 0
     ParentTab[Node]=-1;
 
-    AdjacencyList *tmp=new AdjacencyList; // tymczasowa lista zeby nie nadpisywac danych
-    tmp=graph->GetListOfAdjacency(NodePlus1);
-       
+    adjacencyListElem *tmp=new adjacencyListElem; // tymczasowa lista zeby nie nadpisywac danych
+    List list=graph->incidentEdges(NodePlus1);
+    tmp=list.Head();
+
+
     queue.push(NodePlus1,0);               // na potrzeby algorytmu dodaje wierzcholek wybrany
           
     while(tmp){
-        queue.push(tmp->Vnode,tmp->weightTo);
+        queue.push(tmp->edge.V2,tmp->edge.weight);
         tmp=tmp->next;
     }
 
     while(!queue.IsEmpty()){
-        nearest=queue.pop();      
-        tmp=graph->GetListOfAdjacency(nearest.Node);  
+        nearest=queue.pop(); 
+        List list1=graph->incidentEdges(nearest.Node);
+        tmp=list1.head;     
 
         while(tmp){                            // dla wszystkich sasiadow wyjetego z kolejki wierzcholka
-            if( (LengthTab[nearest.Node-1]+tmp->weightTo) < LengthTab[tmp->Vnode-1] ){           
-                LengthTab[tmp->Vnode-1]=LengthTab[nearest.Node-1]+tmp->weightTo;
-                queue.push((tmp->Vnode),LengthTab[tmp->Vnode-1]);
-                ParentTab[tmp->Vnode-1]=nearest.Node-1;
+            if( (LengthTab[nearest.Node-1]+tmp->edge.weight) < LengthTab[tmp->edge.V2-1] ){           
+                LengthTab[tmp->edge.V2-1]=LengthTab[nearest.Node-1]+tmp->edge.weight;
+                queue.push((tmp->edge.V2),LengthTab[tmp->edge.V2-1]);
+                ParentTab[tmp->edge.V2-1]=nearest.Node-1;
             }
             tmp=tmp->next;                    // przesuwamy sie po sasiadach
         }
@@ -145,25 +148,30 @@ int* DijkstraAlgorythm(int NodePlus1,AdjacencyMatGraph *graph,int *ParentTab){
     LengthTab[Node]=0;
     ParentTab[Node]=-1;    
 
-    queue.push(Node,0);          // na potrzeby algorytmu (odleglosc do samego siebie)
+    adjacencyListElem *tmp=new adjacencyListElem;
+    List list=graph->incidentEdges(Node);
+    tmp=list.Head();
 
-    for(int i=0;i<graph->GetNumberOfNodes();i++){
-        if((*graph)(Node,i))                             // jesli krawedz istnieje
-        queue.push(i,(*graph)(Node,i)->weight); 
+    queue.push(NodePlus1,0);          // na potrzeby algorytmu (odleglosc do samego siebie)
+ 
+
+    while(tmp){
+        queue.push(tmp->edge.V2,tmp->edge.weight);
+        tmp=tmp->next;
     }
-
-
     while(!queue.IsEmpty()){
         nearest=queue.pop();
-      
-        for(int i=0;i<graph->GetNumberOfNodes();i++){
-            if((*graph)(nearest.Node,i)){      
-                if( (LengthTab[nearest.Node]+(*graph)(nearest.Node,i)->weight) < LengthTab[i] ){           
-                    LengthTab[i]=LengthTab[nearest.Node]+(*graph)(nearest.Node,i)->weight;
-                    queue.push(i,LengthTab[i]);
-                    ParentTab[i]=nearest.Node;
-                }
+        
+        List list=graph->incidentEdges(nearest.Node-1);
+        tmp=list.head;
+        
+        while(tmp){                            // dla wszystkich sasiadow wyjetego z kolejki wierzcholka
+            if( (LengthTab[nearest.Node-1]+tmp->edge.weight) < LengthTab[tmp->edge.V2-1] ){           
+                LengthTab[tmp->edge.V2-1]=LengthTab[nearest.Node-1]+tmp->edge.weight;
+                queue.push((tmp->edge.V2),LengthTab[tmp->edge.V2-1]);
+                ParentTab[tmp->edge.V2-1]=nearest.Node-1;
             }
+            tmp=tmp->next;                    // przesuwamy sie po sasiadach
         }
         
     }

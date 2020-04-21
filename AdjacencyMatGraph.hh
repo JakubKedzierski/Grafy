@@ -1,5 +1,6 @@
 #pragma once
 #include "graph.hh"
+#include "AdjacencyList.hh"
 const int maxweight =100000;
 
 
@@ -16,13 +17,12 @@ public:
 
     void AddEdge(int,int,int);
     Edge *operator()(int Index1,int Index2){return matrix[Index1][Index2];}
-//*incidentEdges(); 
     
     /* Metody wirtualne */
+    List incidentEdges(int Node)const; 
     void FillGraph(double density);
-    void PrintGraph();
+    void PrintGraph()const;
     bool ReadFromFile(const char* name);
 };
 
 
-// ofstream >>

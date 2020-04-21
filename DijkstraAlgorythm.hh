@@ -1,7 +1,6 @@
 #pragma once
-#include "AdjacencyList.hh"
 #include "AdjacencyMatGraph.hh"
-#include "AdjacencyList.hh"
+#include "AdjacencyListGraph.hh"
 
 struct elem
 {

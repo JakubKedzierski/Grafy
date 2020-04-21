@@ -1,6 +1,6 @@
 #include <iostream>
 #include <chrono>
-#include "AdjacencyList.hh"
+#include "AdjacencyListGraph.hh"
 #include "AdjacencyMatGraph.hh"
 #include "DijkstraAlgorythm.hh"
 
@@ -36,14 +36,20 @@ double test(Graph *graph){
 
 
 int main(){
- 
 
- 
- 
- Graph *graph1=new AdjacencyMatGraph(1000);
+    Graph *graph1=new ListGraph();
+    if(!graph1->ReadFromFile("graf.txt"))    
+    cerr << endl << "Operacja zakonczyla sie niepowodzeniem. Najprawdopodobniej zla nazwa pliku." << endl;
+    
+    graph1->PrintGraph();
+    WriteDijkstraOut(graph1,"zapis.txt");
+
+ /*
+   Graph *graph1=new ListGraph(5);
  graph1->FillGraph(1);
- cout << test(graph1);
-
+ graph1->PrintGraph();
+WriteDijkstraOut(graph1,"nowy.txt");
+*/
 /*
     double time[5][4][100];
     Stats stats[5][4];
@@ -88,14 +94,14 @@ int main(){
         }
     }
 
-
+*/
 
     //if(!graph1->ReadFromFile("graf.txt"))    
     //cerr << endl << "Operacja zakonczyla sie niepowodzeniem. Najprawdopodobniej zla nazwa pliku." << endl;
     
     //graph1->PrintGraph();
     //WriteDijkstraOut(graph1,"zapis.txt");
-*/
+
 }
 
 

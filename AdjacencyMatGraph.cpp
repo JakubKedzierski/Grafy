@@ -69,7 +69,7 @@ void AdjacencyMatGraph::AddEdge(int first,int second, int weight){
     }
 }
 
-void AdjacencyMatGraph::PrintGraph(){
+void AdjacencyMatGraph::PrintGraph()const{
 cout << endl << "Macierz sasiedztwa:" << endl;   
     for (int i=0;i<NumberOfNodes+1;i++){
         cout <<setw(4) << i<< "|" ;
@@ -147,7 +147,7 @@ bool AdjacencyMatGraph::ReadFromFile(const char* name){
     NumberOfNodes=BuffNumb[1];
     getline(file,buffer);
     
-    matrix= matrix=new Edge **[NumberOfNodes];       // alokacja miejsca na wczytany graf
+    matrix=new Edge **[NumberOfNodes];       // alokacja miejsca na wczytany graf
     for(int i=0;i<NumberOfNodes;i++){
         matrix[i]=new Edge*[NumberOfNodes];
     }
@@ -164,3 +164,14 @@ bool AdjacencyMatGraph::ReadFromFile(const char* name){
     return true;
 }
 
+List AdjacencyMatGraph::incidentEdges(int Node)const{
+    List list;
+   
+    for(int i=0;i<NumberOfNodes;i++){
+        if(matrix[Node][i]){
+            list.insertFront(*matrix[Node][i]);
+        }
+    }
+    
+    return list;
+}
