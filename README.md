@@ -2,14 +2,16 @@
 Grafy - algorytm Dijkstry
 
 Zawartość plików:
+- Grafy sprawozdanie.pdf : sprawozdanie 
+- *.mkv : video z kompilacja oraz dzialaniem programu
 - graph.hh: Klasa bazowa- graf  
 - AdjacencyListGraph.* : graf na liście sąsiedztwa, metody grafu  
 - AdjacencyMatGraph.* : graf na macierzy sąsiedztwa, metody grafu
 - main.cpp :  driver 
 - DijkstraAlgorythm.* : algorytm Dijkstry oraz kolejka priorytetowa na użytek algorytmu
 - AdjacencyList.* : lista jednokierunkowa ( używana jako lista sąsiedztwa )
-- *.mkv : video z kompilacja oraz dzialaniem programu
-- Grafy sprawozdanie.pdf : sprawozdanie 
+- *.txt : przykladowe grafy zapisywane do pliku/zczytywane z pliku
+- graph : program wykonywalny pod Linuxa
 
 Struktura klas:
 klasa bazowa: Graph
