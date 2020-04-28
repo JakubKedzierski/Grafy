@@ -14,4 +14,4 @@ DijkstraAlgorythm.o: DijkstraAlgorythm.hh DijkstraAlgorythm.cpp
 	g++ -g -Wall -Iinc -pedantic -std=c++11 -c -o DijkstraAlgorythm.o DijkstraAlgorythm.cpp
 
 clean:
-	rm -f *.o 
+	rm -f *.o  
