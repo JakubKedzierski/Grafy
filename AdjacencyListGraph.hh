@@ -2,22 +2,31 @@
 #include "AdjacencyList.hh"
 #include "graph.hh"
 
+
+/**
+ * @brief Reprezentacja grafu za pomoca listy sasiedztwa
+ *        Klasa ta dziedziczy po klasie Graph, bedacej ogolniejszym
+ *        pojeciem grafu, niezaleznie od jego reprezentacji
+ * 
+ */
 class ListGraph:public Graph
 {
 protected:    
-    List* TabOfLists; //tablica z listami powiazan , iterujemy od 1.
+    // Tablica list sasiedztwa. Dla kazdego wierzcholka tablica przechowuje liste
+    // jego krawedzi 
+    List* TabOfLists;
 public:
- 
-    ListGraph();
+    // Opis poszczegolnych metod znajduje sie w pliku zrodlowym
+    ListGraph(){} 
     ListGraph(int number);
-    ListGraph(const ListGraph &graph);
     ~ListGraph();
-    void AddEdge(int,int,int);
     bool DetectEdge(int,int);
 
     /* Metody wirtualne */
+    void AddEdge(int,int,int);
     List incidentEdges(int Node)const;
     void PrintGraph()const;
+    int opposite(int ,Edge)const;
     void FillGraph(double density);
     bool ReadFromFile(const char* name);
 };

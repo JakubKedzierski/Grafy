@@ -1,28 +1,30 @@
 #pragma once
 #include "graph.hh"
 #include "AdjacencyList.hh"
-const int maxweight =100000;
 
-
+/**
+ * @brief Graf reprezentowany na macierzy sasiedztwa. Macierz sasiedztwa przedstawiona jako
+ *        dwuwymiarowa tablica wskaznikow na krawedzie. Gdy pole macierzy jest puste (NULL) - brak krawedzi.
+ *        Gdy pole zawiera krawedz to w obiekcie krawedzi sa dokladniejsze informacje np. o wadze krawdzi, czy 
+ *        wierzcholkach jakie dana krawedz laczy.
+ */
 class AdjacencyMatGraph:public Graph
 {
 protected:    
-    Edge ***matrix;
+    Edge ***matrix; 
 public:
 
     AdjacencyMatGraph(){}
     AdjacencyMatGraph(int NumOfNodes);
     ~AdjacencyMatGraph();
-    AdjacencyMatGraph(const AdjacencyMatGraph &graph);   
-
-    void AddEdge(int,int,int);
-    Edge *operator()(int Index1,int Index2){return matrix[Index1][Index2];}
     
     /* Metody wirtualne */
+    void AddEdge(int,int,int);    
     List incidentEdges(int Node)const; 
     void FillGraph(double density);
     void PrintGraph()const;
     bool ReadFromFile(const char* name);
+    int opposite(int,Edge)const;
 };
 
 

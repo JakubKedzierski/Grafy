@@ -1,7 +1,28 @@
-Odleglosci od wierzcholka startowego nr 1
-Format danych: [Wierzcholek Koncowy] : [koszt drogi] | [kolejne wierzcholki liczac od wierzcholka startowego]
- 1:    0 | 1
- 2:  514 | 1-> 3-> 2
- 3:  447 | 1-> 3
- 4:  847 | 1-> 3-> 4
- 5:  816 | 1-> 3-> 2-> 5
+na statystyki
+
+/*
+    Stats stats[5][4];
+    int size[5]={10,50,100,500,1000};
+    double dens[4]={0.25,0.5,0.75,1};
+    int i,j;
+    for(i=0;i<4;i++){
+        for(j=0;j<4;j++){
+            for(int k=0;k<100;k++){    
+                    Graph *graph1=new AdjacencyMatGraph(size[i]);
+                    graph1->FillGraph(dens[j]);
+                    stats[i][j].average+=test(graph1) ;
+                    delete graph1;
+            }
+        }
+    }
+
+
+    for(int i=0;i<4;i++){
+        for(int j=0;j<4;j++){
+            stats[i][j].average=stats[i][j].average/100;
+            cout << setw(3) << size[i] << ";" << setw(6) << dens[j] << ";" ;
+            cout << stats[i][j].min << ";"  << stats[i][j].average  << ";"  << stats[i][j].max << endl;
+        }
+    }
+
+*/

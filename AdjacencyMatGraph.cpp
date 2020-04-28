@@ -6,29 +6,16 @@
 #include <cmath>
 using namespace std;
 
-AdjacencyMatGraph::AdjacencyMatGraph(const AdjacencyMatGraph &graph){    
- 
-    NumberOfNodes=graph.NumberOfNodes;
-    matrix=new Edge **[NumberOfNodes];
-    for(int i=0;i<NumberOfNodes;i++){
-        matrix[i]=new Edge*[NumberOfNodes];   
-    } 
-        for(int i=0;i<NumberOfNodes;i++){
-            for(int j=0;j<NumberOfNodes;j++){
-                if(matrix[i][j])
-                    matrix[i][j]=new Edge;
-            }
-        }     
-   (*this)=graph;
-
-}
-
-
+/**
+ * @brief Konstruktor grafu reprezentowanego na macierzy sasiedztwa. Podczas konstrukcji obiektu
+ *        alokujemy pamiec potrzebna na przechowanie dwuwymiarowej tablicy wskaznikow na krawedzie.
+ * 
+ * @param NumOfNodes - liczba wierzcholkow w grafie
+ */
 AdjacencyMatGraph::AdjacencyMatGraph(int NumOfNodes){
     NumberOfNodes=NumOfNodes;
     NumberOfEdges=0;
     StartingNode=1;
-    PossibleLoop=false;
     matrix=new Edge **[NumberOfNodes];
     for(int i=0;i<NumberOfNodes;i++){
         matrix[i]=new Edge*[NumberOfNodes];
@@ -40,6 +27,10 @@ AdjacencyMatGraph::AdjacencyMatGraph(int NumOfNodes){
     }
 }
 
+/**
+ * @brief Destruktor grafu. Podczas usuwania obiektu pamietamy o zwolnieniu pamieci
+ *        potrzebnej do przechowywania macierzy wskaznikow na krawedz
+ */
 AdjacencyMatGraph::~AdjacencyMatGraph(){
     for(int i=0;i<NumberOfNodes;i++){
         for(int j=0;j<NumberOfNodes;j++){
@@ -55,6 +46,13 @@ AdjacencyMatGraph::~AdjacencyMatGraph(){
     delete[] matrix;
 }
 
+/**
+ * @brief Dodanie krawedzi do grafu.  
+ * 
+ * @param first - pierwszy wierzcholek krawedzi
+ * @param second - drugi wierzcholek krawedzi
+ * @param weight - waga krawedzi
+ */
 void AdjacencyMatGraph::AddEdge(int first,int second, int weight){
     if(first!=second){
         matrix[first-1][second-1]=new Edge;
@@ -69,6 +67,11 @@ void AdjacencyMatGraph::AddEdge(int first,int second, int weight){
     }
 }
 
+/**
+ * @brief Wypisanie grafu reprezentowanego na macierzy sasiedztwa na standardowy
+ *        strumien wyjsciowy
+ * 
+ */
 void AdjacencyMatGraph::PrintGraph()const{
 cout << endl << "Macierz sasiedztwa:" << endl;   
     for (int i=0;i<NumberOfNodes+1;i++){
@@ -89,23 +92,22 @@ cout << endl << "Macierz sasiedztwa:" << endl;
 }
 
 /**
- * @brief Przy wypelnianu grafu zastosowalem metode losowania ze zbioru, po to aby nie powtarzaly sie
- * wyniki losowania oraz aby uniknac petli w grafie 
+ * @brief Wypelnienie grafu losowymi krawedziami zgodnie z zadana gestoscia. Opis algorytmu podobnie jak dla grafu
+ *        na liscie sasiedztwa
  * 
- * Algorytm polega na losowaniu krawedzi -> wylosowana krawedz zostaje wyrzucona z puli dostepnych 
- * krawedzi
- * 
- * Dostepne krawedzi to pola w macierzy sasiedztwa. Mozna dostrzec, ze ta macierz jest symetryczna i 
- * wystarczy wybierac krawedz w gornej czesci
- * 
+ * Na poczatku podjelem probe zaimplementowania algorytmu losowania ze zbioru, po to aby nie powtarzaly sie
+ * wyniki losowania i aby uniknac tracenia czasu na losowanie. Moj algorytm nie zapewnial jednak calkowitej 
+ * losowosci (wystepowalo duze prawdopodobienstwo wylosowania krawedzi pomiedzy poczatkowymi wierszami i kolumnami
+ *  np krawedzi 1-2 1-4 1-5 2-3 w grafie z 10 wierzcholkami). Powrocilem wiec do algorytmu, ktory dluzej sie wykonuje,
+ *  ale zapewnia wieksza losowosc i jest prostszy w zrozumieniu.
  * 
  * @param density 
  */
 void AdjacencyMatGraph::FillGraph(double density){
-    double nv=NumberOfNodes,ne=nv*(nv-1)*density/2;
+    double nv=NumberOfNodes,ne=nv*(nv-1)*density/2; // ne - liczba krawedzi nv - liczba wierzcholkow
     srand( time( NULL ) );
 
-    if(density==1){
+    if(density==1){ // pelny graf
         for(int i=0;i<NumberOfNodes;i++){
             for(int j=0;j<NumberOfNodes;j++){
                 if(i!=j){
@@ -119,7 +121,8 @@ void AdjacencyMatGraph::FillGraph(double density){
     }
 
     int loops=ne,row=0,col=0;
-    while(loops){
+    while(loops){                           // podobnie jak w grafie reprezentowanym na liscie losujemy dopoki nie wylosujemy
+                                            // wystarczajacej liczby krawedzi do zapewnienia odpowiedniej gestosci
         row=rand()%NumberOfNodes+1;
         col=rand()%NumberOfNodes+1;
         if(row!=col){
@@ -132,7 +135,16 @@ void AdjacencyMatGraph::FillGraph(double density){
 
 }
 
+/**
+ * @brief Wczytanie grafu z pliku. 
+ * 
+ * @param name - nazwa w pliku w ktorym znajduje sie zapisany graf w okreslonym porzadku ( jak w zalozeniach projektu )
+ * @return true - pomyslne wczytanie
+ * @return false  - blad przy wczytywaniu
+ */
 bool AdjacencyMatGraph::ReadFromFile(const char* name){
+
+    /* Algorytm prawie taki sam jak dla listy sasiedztwa */
 
     ifstream file;
     file.open(name,ifstream::in);
@@ -164,14 +176,35 @@ bool AdjacencyMatGraph::ReadFromFile(const char* name){
     return true;
 }
 
+/**
+ * @brief Metoda zwracajaca krawedzie danego wierzcholka
+ * 
+ * @param Node - wierzcholek dla ktorego mamy zwrocic krawedzie
+ * @return List - lista krawedzi danego wierzcholka
+ */
 List AdjacencyMatGraph::incidentEdges(int Node)const{
     List list;
    
     for(int i=0;i<NumberOfNodes;i++){
-        if(matrix[Node][i]){
+        if(matrix[Node][i]){          // gdy krawedz istnieje
             list.insertFront(*matrix[Node][i]);
         }
     }
     
     return list;
+}
+
+/**
+ * @brief Zwraca wierzcholek przeciwny krawedzi do zadanego
+ * 
+ * @param Node - wierzcholek zadany
+ * @param edge - krawedz
+ * @return int - zwracamy wierzcholek przeciwny
+ */
+int AdjacencyMatGraph::opposite(int Node,Edge edge)const{
+    if(Node==edge.V1){
+        return edge.V2;
+    }else{
+        return edge.V1;
+    }
 }

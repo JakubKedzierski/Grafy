@@ -1,12 +1,21 @@
 #include "DijkstraAlgorythm.hh"
 #include <fstream>
 
-//u1 Trzeba zaznaczyc ze ta kolejka priorytetowa zostalaa dostosowana do moich potrzeb
+/**
+ * @file W tym pliku znajduja sie rozwiniecia metod kolejki priorytetowej,
+ *        algorytm Dijkstry oraz funkcja zapisujaca algorytm do pliku.
+ */
 
 
-void PriorityQueue::IncreaseSize(int n){
-    elem *NewQueue=new elem[2*n];          // zwiekszamy pamiec aby nie przekroczyc gornego limitu ( od razu 2 krotnie aby nie tracic czasu na 
-                                           // przepisywanie danych )
+
+/**
+ * @brief Zwiekszenie rozmiaru kolejki w przypadku przekroczenia gornej granicy pojemnosci kolejki.
+ *        W programie (przy algorytmie) metoda nie stosowana. (Potrzebna byla podczas debuggowania)
+ * 
+ */
+void PriorityQueue::IncreaseSize(){
+    Edge *NewQueue=new Edge[2*n];          // zwiekszamy pamiec aby nie przekroczyc gornego limitu ( od razu 2-krotnie aby nie tracic czasu na 
+                                          // przepisywanie danych )
     for(int i=0;i<MaxSize;i++){
         NewQueue[i]=queue[i];        
     }
@@ -15,44 +24,56 @@ void PriorityQueue::IncreaseSize(int n){
     queue=NewQueue;  
 }
 
-void PriorityQueue::push(int Node,int AddPriority){
-    int son=n++,father;
+/**
+ * @brief Dodawanie elementu do kolejki priorytetowej. Element o najmniejszym kluczu (najmniejsza waga krawedzi zawsze ma miejsce korzenia)
+ * 
+ * @param edge - element (krawedz)
+ */
+void PriorityQueue::push(Edge edge){
+    int son=n++; /* syn zajmuje ostatnia mozliwa pozycje w kolejce (na kopcu) */
+    int father=(son-1)/2; // miejsce ojca (poziom wyzej od syna)
 
     if(n>=MaxSize){
-        IncreaseSize(n);
+        IncreaseSize();
     }
 
-    father=(son-1)/2;
-    while(son>0 && queue[father].priority>AddPriority){  // naprawa kopca - najmniejszy element na szczycie kopca
-        queue[son]=queue[father]; // ojciec na pozycji syna
+    while(son>0 && queue[father].weight>edge.weight){   // naprawa kopca - najmniejszy element na szczycie kopca
+        queue[son]=queue[father];                        // ojciec na pozycji syna
         son=father; 
-        father=(son-1)/2;   // nowe miejsce ojca 
+        father=(son-1)/2;                                // nowe miejsce ojca 
     }
 
-    queue[son].Node=Node;
-    queue[son].priority=AddPriority;
+    queue[son]=edge;
     
 }
 
-elem PriorityQueue::pop(){
-    int i,j;
-    elem ReturnElem,HelpElem;
+/**
+ * @brief Usuwanie elementu z kolejki. Usuwany element ma najmniejszy klucz sposrod wszystkich
+ *        elementow w kolejce. Po usunieciu dokonujemy naprawy kopca.
+ * 
+ * @return Edge - zwracana krawedz
+ */
+Edge PriorityQueue::pop(){
+    int i,j; // zmienne do iterowania - ojciec i syn
+    Edge ReturnElem,tmp;
 
     if(!n){
-        elem exception;exception.Node=0; // gdy wyrzucamy exception kolejka jest pusta
+        Edge exception;exception.weight=0; // gdy wyrzucamy exception kolejka jest pusta
+        cerr << "Kolejka jest juz pusta !" << endl;
         return exception;
     }
-    ReturnElem=queue[0];
-    n--;
-    HelpElem=queue[n];
+
+    ReturnElem=queue[0]; // zwracamy korzen
+    n--;                 // zmniejszenie liczby elementow kolejki
+    tmp=queue[n];
     i=0; // korzen
     j=1;  // lewy syn
     while(j<n){ // robimy tzw "downheap"
 
-        if((j+1<n) && (queue[j+1].priority<queue[j].priority) ){  // szukamy synow o mniejszym priorytecie (odleglosci)
+        if((j+1<n) && (queue[j+1].weight<queue[j].weight) ){  // szukamy synow o mniejszym priorytecie (odleglosci)
             j++;
         }
-        if(HelpElem.priority<=queue[j].priority){  // sprawdzenie warunku kopca
+        if(tmp.weight<=queue[j].weight){  // sprawdzenie warunku kopca
             break;
         }
 
@@ -61,22 +82,59 @@ elem PriorityQueue::pop(){
         j=2*j+1;            // lewy syn 
     } 
 
-    queue[i]=HelpElem;
+    queue[i]=tmp;
 
 
     return ReturnElem;
 }
 
+/**
+ * @brief Zamiana klucza wskazanego przez uzytkownika elementu
+ * 
+ * @param Node - wierzcholek (drugi w krawedzi) dla ktorego mamy dokonac zmiany klucza
+ * @param weight - waga krawedzi
+ */
+void PriorityQueue::replaceKey(int Node,int weight){   
+
+     int k=0;      // zmienna do przechowania miejsca znalezionego elementu
+     for(int i=0;i<n;i++){
+         if(queue[i].V2==Node){
+            queue[i].weight=weight;             
+            k=i; 
+            break;
+         }
+     }
+     int father=(k-1)/2; // miejsce ojca
+     while(k>0&&queue[father].weight>queue[k].weight){  // przywrocenie wlasnosci kopca
+         swap(queue[k],queue[father]);
+         k=father;
+         father=(k-1)/2;
+     }
+
+}
+
+/**
+ * @brief Drukowanie kolejnych elementow kolejki
+ * 
+ */
 void PriorityQueue::PrintQueue(){
     cout << endl <<  "Kolejka priorytetowa: " << endl;
     for(int i=0;i<n;i++){
-        cout << "W: " << queue[i].Node << " waga: " << queue[i].priority <<  endl;
+        cout << "W: " << queue[i].V2 << " waga: " << queue[i].weight <<  endl;
     }
 }
 
+/**
+ * @brief Funkcja drukujaca na okreslony strumien dlugosc drogi do poszczegolnych
+ * wierzcholow grafu
+ * 
+ * @param os - strumien wyjsciowy
+ * @param source - wierzcholek poprzedzajacy
+ * @param ParentTab - tablica wierzcholkow poprzedzajacych
+ */
 void PrintPath(ostream& os,int source,int* ParentTab){
 
-    if(ParentTab[source]==-1) return  ;
+    if(ParentTab[source]==-1) return  ; // dotarcie do wierzcholka poczatkowego
 
     PrintPath(os,ParentTab[source],ParentTab);    
 
@@ -84,120 +142,85 @@ void PrintPath(ostream& os,int source,int* ParentTab){
 }
 
 /**
- * @brief 
+ * @brief Algorytm Dijkstry - znalezienie najkrotszej sciezki w grafie od zadanego wierzcholka do wszystkich
+ *        pozostalych
  * 
- * @param NodePlus1 
- * @param graph 
- * @param ParentTab - tablica z poprzednikami, dzieki niej mozliwe jest odtworzenie sciezki do wierzcholka koncowego
- * @return int* 
+ * @param NodePlus1 - zadany wierzcholek dla ktorego szukamy najkrotszych sciezek
+ * @param graph - graf do szukania sciezek, reprezentacja grafu jest dowolna
+ * @param ParentTab - tablica do przechowania "rodzicow" (poprzednikow w sciezce)
+ * @return int* - zwracana tablica najkrotszych sciezek do kazdego wierzcholka
  */
-int* DijkstraAlgorythm(int NodePlus1,ListGraph *graph,int *ParentTab){
+int* DijkstraAlgorythm(int NodePlus1,Graph *graph,int *ParentTab){
 
     int Node=NodePlus1-1;                          // wybrany wierzcholek (jako ze numeracja w tablicy od 0 a numeracja wierzcholkow od 1)                     
-    PriorityQueue queue(2*graph->GetNumberOfNodes()); // tworzymy kolejke priorytetowa przechowujaca max elem =liczba wierzcholkow
-    elem nearest;                              // zmienna pomocnicza dla 'wyjetego' z kolejki elementu               
-    int *LengthTab= new int[graph->GetNumberOfNodes()];  // tablica przechowujaca odleglosci do pozostalych wierzcholkow
-
-    for(int i=0;i<graph->GetNumberOfNodes();i++){      // Przypisanie naszej flagi (brak polaczenia z wierzcholkiem)
-        LengthTab[i]=100000;
-    }
-    LengthTab[Node]=0;                            // dla wybranego wierzcholka odleglosc do samego siebie to 0
-    ParentTab[Node]=-1;
-
-    adjacencyListElem *tmp=new adjacencyListElem; // tymczasowa lista zeby nie nadpisywac danych
-    List list=graph->incidentEdges(NodePlus1);
-    tmp=list.Head();
-
-
-    queue.push(NodePlus1,0);               // na potrzeby algorytmu dodaje wierzcholek wybrany
-          
-    while(tmp){
-        queue.push(tmp->edge.V2,tmp->edge.weight);
-        tmp=tmp->next;
-    }
-
-    while(!queue.IsEmpty()){
-        nearest=queue.pop(); 
-        List list1=graph->incidentEdges(nearest.Node);
-        tmp=list1.head;     
-
-        while(tmp){                            // dla wszystkich sasiadow wyjetego z kolejki wierzcholka
-            if( (LengthTab[nearest.Node-1]+tmp->edge.weight) < LengthTab[tmp->edge.V2-1] ){           
-                LengthTab[tmp->edge.V2-1]=LengthTab[nearest.Node-1]+tmp->edge.weight;
-                queue.push((tmp->edge.V2),LengthTab[tmp->edge.V2-1]);
-                ParentTab[tmp->edge.V2-1]=nearest.Node-1;
-            }
-            tmp=tmp->next;                    // przesuwamy sie po sasiadach
-        }
-
-    }
-
-    return LengthTab;
-
-}
-
-int* DijkstraAlgorythm(int NodePlus1,AdjacencyMatGraph *graph,int *ParentTab){
-    int Node=NodePlus1-1;                          // wybrany wierzcholek (jako ze numeracja w tablicy od 0 a numeracja wierzcholkow od 1)                     
-    PriorityQueue queue(2*graph->GetNumberOfNodes()); // tworzymy kolejke priorytetowa przechowujaca max elem =liczba wierzcholkow
-    elem nearest;                              // zmienna pomocnicza dla 'wyjetego' z kolejki elementu               
-    int *LengthTab= new int[graph->GetNumberOfNodes()];  // tablica przechowujaca odleglosci do pozostalych wierzcholkow
+    PriorityQueue queue(graph->vertices());     // tworzymy kolejke priorytetowa przechowujaca max elem =liczba wierzcholkow
+    Edge tmpEdge;                              // zmienna pomocnicza dla 'wyjetego' z kolejki elementu               
+    int *LengthTab= new int[graph->vertices()];  // tablica przechowujaca odleglosci do  wierzcholkow
     
-    for(int i=0;i<graph->GetNumberOfNodes();i++){      // Przypisanie naszej flagi (brak polaczenia z wierzcholkiem)
-        LengthTab[i]=100000;
-    }
-    LengthTab[Node]=0;
-    ParentTab[Node]=-1;    
+    Edge e0;e0.V1=NodePlus1;                   // zainicjalizowanie krawedzi przechowywanych przez kolejke 
+                                            //(wierzcholek V1 bedzie taki sam i jest to wierzcholek zadany)
 
-    adjacencyListElem *tmp=new adjacencyListElem;
-    List list=graph->incidentEdges(Node);
-    tmp=list.Head();
-
-    queue.push(NodePlus1,0);          // na potrzeby algorytmu (odleglosc do samego siebie)
- 
-
-    while(tmp){
-        queue.push(tmp->edge.V2,tmp->edge.weight);
-        tmp=tmp->next;
-    }
-    while(!queue.IsEmpty()){
-        nearest=queue.pop();
-        
-        List list=graph->incidentEdges(nearest.Node-1);
-        tmp=list.head;
-        
-        while(tmp){                            // dla wszystkich sasiadow wyjetego z kolejki wierzcholka
-            if( (LengthTab[nearest.Node-1]+tmp->edge.weight) < LengthTab[tmp->edge.V2-1] ){           
-                LengthTab[tmp->edge.V2-1]=LengthTab[nearest.Node-1]+tmp->edge.weight;
-                queue.push((tmp->edge.V2),LengthTab[tmp->edge.V2-1]);
-                ParentTab[tmp->edge.V2-1]=nearest.Node-1;
-            }
-            tmp=tmp->next;                    // przesuwamy sie po sasiadach
+    for(int i=0;i<graph->vertices();i++){     
+    
+        /* Wypelnienie tablicy odleglosci */   
+        if(i!=Node){
+            LengthTab[i]=100000;
+        }else{
+            LengthTab[i]=0;   
         }
-        
+
+        /* ... oraz umieszczenie na kolejce priorytetowej */    
+        e0.V2=i+1;e0.weight=LengthTab[i];
+        queue.push(e0);
+    }
+
+    ParentTab[Node]=-1; // przypisanie flagi w tablicy "rodzicow" na miejscu wierzcholka poczatkowego
+    adjacencyListElem *listIterator; // tymczasowa element do przechowywania glowy listy krawedzi i iterowania sie po kolejnych krawedziach
+    int opp; // znacznik na wierzcholek przeciwny
+
+    while(!queue.IsEmpty()){ 
+        tmpEdge=queue.pop(); // usuwamy najmniejszy element
+
+        List list1=graph->incidentEdges(tmpEdge.V2-1);  // pobieramy krawedzi danego wierzcholka
+        listIterator=list1.head;     
+
+        while(listIterator){                            // dla wszystkich sasiadow wyjetego z kolejki wierzcholka
+            opp=graph->opposite(listIterator->edge.V1,listIterator->edge)-1;
+            
+            if( (LengthTab[tmpEdge.V2-1]+listIterator->edge.weight) < LengthTab[opp] ){           
+                LengthTab[opp]=LengthTab[tmpEdge.V2-1]+listIterator->edge.weight;          // relaksacja krawedzi
+                queue.replaceKey(opp+1,LengthTab[opp]);   // zmiana odleglosci do konkretnego wierzcholka w kolejce
+                ParentTab[opp]=tmpEdge.V2-1; // zapisanie wierzcholka do tablicy rodzicow (na potrzeby odtworzenia sciezki)
+            }
+
+            listIterator=listIterator->next;                    // przesuwamy sie po sasiadach
+        }
+    
     }
 
     return LengthTab;
 }
 
+/**
+ * @brief Zapis wyniku dzialania algorytmu do pliku
+ * 
+ * @param graph - graf na ktorym bedziemy stosowac algorytm
+ * @param name - nazwa pliku do zapisu
+ * @return true - zapis z powodzeniem
+ * @return false - nieudany zapis
+ */
 bool WriteDijkstraOut(Graph* graph,const char* name){
-    int *ParentTab=new int[graph->GetNumberOfNodes()];
+    int *ParentTab=new int[graph->vertices()]; // tablica "rodzicow" w sciezce
     ofstream file(name);
     if(!file.good()) return false;
 
-    int *DistanceTab=new int[graph->GetNumberOfNodes()];    
+    int *DistanceTab=new int[graph->vertices()];    // tablica odleglosci
 
-    if(ListGraph* graph1 = dynamic_cast<ListGraph*>(graph)){
-        DistanceTab=DijkstraAlgorythm(graph1->GetStartingNode(),graph1,ParentTab);
-    }
-
-    if(AdjacencyMatGraph* graph2 = dynamic_cast<AdjacencyMatGraph*>(graph)){
-        DistanceTab=DijkstraAlgorythm(graph2->GetStartingNode(),graph2,ParentTab);
-    }
-
+    DistanceTab=DijkstraAlgorythm(graph->GetStartingNode(),graph,ParentTab);
 
     file <<  "Odleglosci od wierzcholka startowego nr " << graph->GetStartingNode() << endl;
     file << "Format danych: [Wierzcholek Koncowy] : [koszt drogi] | [kolejne wierzcholki liczac od wierzcholka startowego]" << endl;
-    for(int i=0;i<graph->GetNumberOfNodes();i++){
+    for(int i=0;i<graph->vertices();i++){
         if(DistanceTab[i]!=100000){
             file << setw(2) << i+1 <<": "<< setw(4) <<  DistanceTab[i] <<" | " << graph->GetStartingNode();
             PrintPath(file,i,ParentTab);
