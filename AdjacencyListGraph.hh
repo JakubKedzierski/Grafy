@@ -22,7 +22,9 @@ public:
     ~ListGraph();
     bool DetectEdge(int,int);
 
+
     /* Metody wirtualne */
+    void RemoveEdge(int,int);    
     void AddEdge(int,int,int);
     List incidentEdges(int Node)const;
     void PrintGraph()const;

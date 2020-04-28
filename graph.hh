@@ -21,6 +21,7 @@ public:
     void NewStartingNode(int Start){StartingNode=Start;}
     
     /* Metody wirtualne*/
+    virtual void RemoveEdge(int,int)=0;                // usuniecie krawedzi
     virtual void AddEdge(int,int,int)=0;               // dodanie krawedzi    
     virtual void PrintGraph()const=0;               // drukowanie grafu na stdout
     virtual void FillGraph(double density)=0;       // wypelnianie grafu

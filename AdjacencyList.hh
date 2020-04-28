@@ -1,5 +1,6 @@
 #pragma once
 
+
 /**
  * @brief Krawedz grafu reprezentowana jako dwa wierzcholki oraz wage
  * polaczenia
@@ -33,6 +34,7 @@ class List{
 public:
     adjacencyListElem *head;    
     void insertFront(Edge);  
+    void removeElem(int);
     void Print();           
     List();
     ~List();

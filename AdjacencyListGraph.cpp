@@ -248,3 +248,15 @@ int ListGraph::opposite(int Node,Edge edge)const{
         return edge.V1;
     }
 }
+
+/**
+ * @brief Usuniecie krawedzi
+ * 
+ * @param V1 - pierwszy wierzcholek krawedzi
+ * @param V2 - drugi wierzcholek krawedzi
+ */
+void ListGraph::RemoveEdge(int V1, int V2){
+    TabOfLists[V1].removeElem(V2);
+    TabOfLists[V2].removeElem(V1);
+    NumberOfEdges--;
+}

@@ -208,3 +208,19 @@ int AdjacencyMatGraph::opposite(int Node,Edge edge)const{
         return edge.V1;
     }
 }
+
+/**
+ * @brief Usuniecie krawedzi
+ * 
+ * @param V1 - pierwszy wierzcholek w krawedzi
+ * @param V2 - drugi wierzcholek w krawedzi
+ */
+void AdjacencyMatGraph::RemoveEdge(int V1,int V2){
+    if(matrix[V1][V2]){
+        delete matrix[V1][V2];
+        matrix[V1][V2]=NULL;
+        delete matrix[V2][V1];
+        matrix[V2][V1]=NULL;
+    }
+    NumberOfEdges--;
+}

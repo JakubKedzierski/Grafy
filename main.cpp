@@ -7,6 +7,10 @@
 using namespace std;
 using namespace std::chrono;
 
+/**
+ * @brief Klasa uzywana podczas gromadzenia statystyk
+ * 
+ */
 class Stats{
 public:
 
@@ -15,6 +19,12 @@ public:
 
 };
 
+/**
+ * @brief Funkcja do pobierania czasu algorytmu
+ * 
+ * @param graph - graf do przeprowadzenia algorytmu
+ * @return double - czas wykonania algorytmu
+ */
 double test(Graph *graph){
     int *ParentTab=new int[graph->vertices()];
     high_resolution_clock::time_point t1 = high_resolution_clock::now();
@@ -43,7 +53,10 @@ int main(){
     graph1=NULL;
     graph1=new ListGraph(6);
     graph1->FillGraph(1);
+    graph1->PrintGraph();
+    graph1->RemoveEdge(3,4);    
     graph1->PrintGraph();    
+
 
     delete graph1;
     graph1=NULL;
@@ -61,6 +74,4 @@ int main(){
 
 }
 
-
-// zamiast pushowania -> replaceKey, , ListGraph jest do przerobienia, 
 

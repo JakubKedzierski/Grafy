@@ -56,3 +56,30 @@ void List::Print(){
     }
     cout << endl;
 }
+
+/**
+ * @brief Usuniecie wybranego elementu
+ * 
+ * @param V2 - wierzcholek przeciwny w krawedzi (elemecie) ktorego usuwamy
+ */
+void List::removeElem(int V2){
+
+    adjacencyListElem *tmp,*tmp1;
+    if(head->edge.V2==V2){
+        tmp=head;
+        head=head->next;
+        delete tmp;
+        tmp=NULL;
+        return;
+    }
+       
+    tmp=head;   
+    while(tmp->next->edge.V2!=V2){
+        tmp=tmp->next;
+    }
+
+    tmp1=tmp->next;
+    tmp->next=tmp1->next;
+    delete tmp1;
+    tmp1=NULL;
+}

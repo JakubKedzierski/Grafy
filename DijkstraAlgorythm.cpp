@@ -181,7 +181,7 @@ int* DijkstraAlgorythm(int NodePlus1,Graph *graph,int *ParentTab){
     while(!queue.IsEmpty()){ 
         tmpEdge=queue.pop(); // usuwamy najmniejszy element
 
-        List list1=graph->incidentEdges(tmpEdge.V2-1);  // pobieramy krawedzi danego wierzcholka
+        List list1=graph->incidentEdges(tmpEdge.V2-1);  // pobieramy krawedzie danego wierzcholka
         listIterator=list1.head;     
 
         while(listIterator){                            // dla wszystkich sasiadow wyjetego z kolejki wierzcholka

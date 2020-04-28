@@ -19,6 +19,7 @@ public:
     ~AdjacencyMatGraph();
     
     /* Metody wirtualne */
+    void RemoveEdge(int,int);    
     void AddEdge(int,int,int);    
     List incidentEdges(int Node)const; 
     void FillGraph(double density);
