@@ -9,6 +9,7 @@ Zawartość plików:
 - DijkstraAlgorythm.* : algorytm Dijkstry oraz kolejka priorytetowa na użytek algorytmu
 - AdjacencyList.* : lista jednokierunkowa ( używana jako lista sąsiedztwa )
 - *.mkv : video z kompilacja oraz dzialaniem programu
+- Grafy sprawozdanie.pdf : sprawozdanie 
 
 Struktura klas:
 klasa bazowa: Graph
