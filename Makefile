@@ -1,5 +1,5 @@
 ListGraph.out: AdjacencyList.o AdjacencyListGraph.o AdjacencyMatGraph.o DijkstraAlgorythm.o 
-	g++ -g -Wall -pedantic -std=c++11 AdjacencyList.o AdjacencyListGraph.o main.cpp AdjacencyMatGraph.o DijkstraAlgorythm.o -o graph -lpanel -lcurses
+	g++ -g -Wall -pedantic -std=c++11 AdjacencyList.o AdjacencyListGraph.o main.cpp AdjacencyMatGraph.o DijkstraAlgorythm.o -o graph 
 
 AdjacencyList.o: AdjacencyList.hh AdjacencyList.cpp
 	g++ -g -Wall -Iinc -pedantic -std=c++11 -c -o AdjacencyList.o AdjacencyList.cpp

@@ -3,7 +3,6 @@ Grafy - algorytm Dijkstry
 
 Zawartość plików:
 - Grafy sprawozdanie.pdf : sprawozdanie 
-- *.mkv : video z kompilacja oraz dzialaniem programu
 - graph.hh: Klasa bazowa- graf  
 - AdjacencyListGraph.* : graf na liście sąsiedztwa, metody grafu  
 - AdjacencyMatGraph.* : graf na macierzy sąsiedztwa, metody grafu

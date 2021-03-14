@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/Graphs.dir/src/AdjacencyList.cpp.o CMakeFiles/Graphs.dir/src/AdjacencyListGraph.cpp.o CMakeFiles/Graphs.dir/src/AdjacencyMatGraph.cpp.o CMakeFiles/Graphs.dir/src/DijkstraAlgorythm.cpp.o CMakeFiles/Graphs.dir/src/main.cpp.o -o Graphs   -L/mnt/b7d44335-8006-431a-bffe-ff532ba133d0/6_semestr/repos/Graphs/include 
